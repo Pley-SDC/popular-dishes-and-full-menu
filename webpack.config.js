@@ -1,6 +1,12 @@
+const path = require('path');
+
+const sourceDirectory = path.join(__dirname, '/client/src/');
+const publicDirectory = path.join(__dirname, '/public/src/');
+
+/* eslint-disable */
 
 module.exports = {
-  entry: __dirname + '/client/src/index.jsx',
+  entry: sourceDirectory,
   module: {
     rules: [
       {
@@ -17,6 +23,9 @@ module.exports = {
   },
   output: {
     filename: 'bundle.js',
-    path: __dirname + '/public'
+    path: publicDirectory
+  },
+  resolve: {
+    extensions: ['.js', '.jsx']
   }
 };
