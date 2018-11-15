@@ -1,33 +1,86 @@
-var mysql = require('mysql');
+const mysql = require('mysql');
 
-var connection = mysql.createConnection({
-  host: 'localhost',
+const DBconnection = mysql.createConnection({
   database: 'yumpSF',
-  user: 'root'
+  user: 'root',
 });
 
-var addRestaurant = function (name, callback) {
-  connection.query('INSERT INTO restaurants (name) VALUES (?)', [name], callback);
+const getRestaurantDishes = (restaurantID, callback) => {
+  const queryStr = `SELECT * FROM restaurants INNER JOIN dishes ON (id = restaurant_id) WHERE id = ${restaurantID}`;
+  DBconnection.query(queryStr, (error, result) => {
+    if (error) {
+      callback(error, null);
+    } else {
+      callback(null, result);
+    }
+  });
 };
 
-var getDishes = function (restaurantName, callback) {
-  var queryStr = 'SELECT * from dishes WHERE restaurant_id IN (SELECT id from restaurants where name = ?)';
-  connection.query(queryStr, [restaurantName], callback);
+const addRestaurant = (names, callback) => {
+  const values = [names.map(name => [name])];
+  DBconnection.query('INSERT INTO restaurants (restaurant_name) VALUES ?', values, (error, result) => {
+    if (error) {
+      callback(error, null);
+    } else {
+      callback(null, result);
+    }
+  });
 };
 
-var getPhotosForDish = function (restaurantName, dishId, callback) {
-  var queryStr = 'SELECT * from dishes_photos WHERE dishes_id = ?';
-  connection.query(queryStr, [dishId], callback);
+const addDishes = (dishesData, callback) => {
+  const values = [dishesData.map(dish => [dish.restaurant_id,
+    dish.dish_name,
+    dish.price,
+    dish.photo_url,
+    dish.number_of_photos,
+    dish.number_of_reviews])];
+  DBconnection.query('INSERT INTO dishes (restaurant_id, dish_name, price, photo_url, number_of_photos, number_of_reviews) VALUES ?', values, (error, result) => {
+    if (error) {
+      callback(error, null);
+    } else {
+      callback(null, result);
+    }
+  });
 };
 
-var getPhotoData = function (photoId, callback) {
-  var queryStr = 'SELECT * FROM photos WHERE id = ?';
-  connection.query(queryStr, [photoId], callback);
+const getDishes = (restaurantName, callback) => {
+  const queryStr = 'SELECT * from dishes WHERE restaurant_id IN (SELECT restaurant_id from restaurants where name = ?)';
+  DBconnection.query(queryStr, restaurantName, (error, result) => {
+    if (error) {
+      callback(error, null);
+    } else {
+      callback(null, result);
+    }
+  });
 };
 
-const getRestaurantName = function (restaurantId, callback) {
-  let queryStr = 'SELECT name FROM restaurants WHERE id = ?';
-  connection.query(queryStr, [restaurantId], callback);
+const updateDish = (dishID, dishData, callback) => {
+  const queryStr = 'UPDATE dishes SET, price = ?, photo_url = ?, number_of_photos = ?, number_of_reviews = ? WHERE dish_id = ?)';
+  DBconnection.query(queryStr, [...dishData, dishID], (error, result) => {
+    if (error) {
+      callback(error, null);
+    } else {
+      callback(null, result);
+    }
+  });
 };
 
-module.exports = { addRestaurant, getDishes, getPhotosForDish, getPhotoData, getRestaurantName, connection };
+const deleteDish = (dishID, callback) => {
+  const queryStr = 'DELETE DROM dishes WHERE dish_id = ?)';
+  DBconnection.query(queryStr, dishID, (error, result) => {
+    if (error) {
+      callback(error, null);
+    } else {
+      callback(null, result);
+    }
+  });
+};
+
+module.exports = {
+  getRestaurantDishes,
+  addDishes,
+  addRestaurant,
+  getDishes,
+  updateDish,
+  deleteDish,
+};

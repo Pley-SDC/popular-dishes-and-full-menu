@@ -1,7 +1,7 @@
 const express = require('express');
 const path = require('path');
-// const db = require('../database/index.js');
 const bodyParser = require('body-parser');
+const DBconnection = require('../database/index.js');
 
 const app = express();
 
@@ -20,8 +20,13 @@ app.use(express.static(path.join(__dirname, '../public')));
 app.get('/:restaurantName/:restaurantID/menu', (req, res) => {
   const { restaurantName, restaurantID } = req.params;
   console.log(`GET request received for restaurantName: ${restaurantName}, restaurantID: ${restaurantID}`);
-  res.status(200).end();
-  // Database query to find data for restaurantName or restaurantID
+  DBconnection.getRestaurantDishes(restaurantID, (error, result) => {
+    if (error) {
+      res.status(404).send(error);
+    } else {
+      res.status(200).send(result);
+    }
+  });
 });
 
 app.post('/:restaurantName/:restaurantID/menu', (req, res) => {

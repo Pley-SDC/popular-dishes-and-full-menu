@@ -11,7 +11,7 @@
     "react-dev": "webpack -d --watch",
     "start": "nodemon server/index.js",
     "create-database": "mysql -u root < database/schema.sql",
-    "seed-database": "node database/faker.js",
+    "seed-database": "node database/seed.js",
     "test": "jest --coverage"
   },
   "dependencies": {
