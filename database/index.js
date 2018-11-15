@@ -55,8 +55,10 @@ const getDishes = (restaurantName, callback) => {
 };
 
 const updateDish = (dishID, dishData, callback) => {
-  const queryStr = 'UPDATE dishes SET, price = ?, photo_url = ?, number_of_photos = ?, number_of_reviews = ? WHERE dish_id = ?)';
-  DBconnection.query(queryStr, [...dishData, dishID], (error, result) => {
+  const values = Object.keys(dishData).map(key => dishData[key]);
+  console.log(values);
+  const queryStr = `UPDATE dishes SET price = ?, photo_url = ?, number_of_photos = ?, number_of_reviews = ? WHERE dish_id = ${dishID}`;
+  DBconnection.query(queryStr, values, (error, result) => {
     if (error) {
       callback(error, null);
     } else {

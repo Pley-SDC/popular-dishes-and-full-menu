@@ -36,6 +36,7 @@ app.post('/:restaurantName/:restaurantID/menu', (req, res) => {
   console.log(`POST request received for restaurantName: ${restaurantName}, restaurantID: ${restaurantID} with ${JSON.stringify(restaurantData)}`);
   DBconnection.addDishes([dishesData], (error) => {
     if (error) {
+      console.log(error);
       res.status(500).send(error);
     } else {
       res.status(201).end();
@@ -46,9 +47,16 @@ app.post('/:restaurantName/:restaurantID/menu', (req, res) => {
 app.put('/:restaurantName/:restaurantID/menu', (req, res) => {
   const { restaurantName, restaurantID } = req.params;
   const restaurantData = req.body;
+  const { dishID } = restaurantData;
+  delete restaurantData.dishID;
   console.log(`PUT request received for restaurantName: ${restaurantName}, restaurantID: ${restaurantID} with ${JSON.stringify(restaurantData)}`);
-  res.status(201).end();
-  // Database query to create new restaurant with attached data
+  DBconnection.updateDish(dishID, restaurantData, (error) => {
+    if (error) {
+      res.status(500).send(error);
+    } else {
+      res.status(201).end();
+    }
+  });
 });
 
 app.delete('/:restaurantName/:restaurantID/menu', (req, res) => {
