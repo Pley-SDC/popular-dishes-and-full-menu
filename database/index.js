@@ -68,7 +68,8 @@ const updateDish = (dishID, dishData, callback) => {
 };
 
 const deleteDish = (dishID, callback) => {
-  const queryStr = 'DELETE DROM dishes WHERE dish_id = ?)';
+  console.log(dishID);
+  const queryStr = 'DELETE FROM dishes WHERE dish_id = ?';
   DBconnection.query(queryStr, dishID, (error, result) => {
     if (error) {
       callback(error, null);

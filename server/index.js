@@ -61,9 +61,16 @@ app.put('/:restaurantName/:restaurantID/menu', (req, res) => {
 
 app.delete('/:restaurantName/:restaurantID/menu', (req, res) => {
   const { restaurantName, restaurantID } = req.params;
+  const { dishID } = req.body;
   console.log(`DELETE request received for restaurantName: ${restaurantName}, restaurantID: ${restaurantID}`);
-  res.status(204).end();
-  // Database query to delete restaurant
+  DBconnection.deleteDish(dishID, (error) => {
+    if (error) {
+      console.log(error);
+      res.status(500).send(error);
+    } else {
+      res.status(204).end();
+    }
+  });
 });
 
 app.listen(PORT, () => {
