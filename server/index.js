@@ -32,9 +32,15 @@ app.get('/:restaurantName/:restaurantID/menu', (req, res) => {
 app.post('/:restaurantName/:restaurantID/menu', (req, res) => {
   const { restaurantName, restaurantID } = req.params;
   const restaurantData = req.body;
+  const dishesData = Object.assign(restaurantData, { restaurantID });
   console.log(`POST request received for restaurantName: ${restaurantName}, restaurantID: ${restaurantID} with ${JSON.stringify(restaurantData)}`);
-  res.status(201).end();
-  // Database query to create new restaurant with attached data
+  DBconnection.addDishes([dishesData], (error) => {
+    if (error) {
+      res.status(500).send(error);
+    } else {
+      res.status(201).end();
+    }
+  });
 });
 
 app.put('/:restaurantName/:restaurantID/menu', (req, res) => {
