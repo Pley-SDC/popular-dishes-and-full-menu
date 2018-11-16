@@ -1,84 +1,78 @@
-var express = require('express');
-var path = require('path');
-var db = require('../database/index.js');
+const express = require('express');
+const path = require('path');
+const bodyParser = require('body-parser');
+const DBconnection = require('../database/index.js');
 
-var app = express();
+const app = express();
 
-app.use(function (req, res, next) {
-  res.header("Access-Control-Allow-Origin", "*");
-  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+const PORT = 3004;
+
+app.use((req, res, next) => {
+  res.header('Access-Control-Allow-Origin', '*');
+  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
   next();
 });
 
+app.use(bodyParser.json());
+
 app.use(express.static(path.join(__dirname, '../public')));
 
-app.get('/:restaurant_id', (req, res) => {
-  res.sendFile(path.join(__dirname, '../public/index.html'));
-});
-
-app.get('/restaurants/:restaurant_id', (req, res) => {
-  var id = req.params.restaurant_id;
-  // console.log('restaurantID form server>>', id);
-
-  db.getRestaurantName(id, (error, results) => {
+app.get('/:restaurantName/:restaurantID/menu', (req, res) => {
+  const { restaurantName, restaurantID } = req.params;
+  console.log(`GET request received for restaurantName: ${restaurantName}, restaurantID: ${restaurantID}`);
+  DBconnection.getRestaurantDishes(restaurantID, (error, result) => {
     if (error) {
-      res.status(500).send(error.message);
+      res.status(404).send(error);
     } else {
-      // console.log('results from database>>>', results);
-      res.status(200).send(results);
+      res.status(200).send(result);
     }
   });
 });
 
-app.get('/menus/:restaurantName', (request, response) => {
-  // invoke database method and sends back results
-  // express & .send already stringifies it, so you don't have to
-
-  // console.log('should be the restaurantname in the URL>>>>', request.params.restaurantName);
-  var restaurantName = request.params.restaurantName;
-
-  db.getDishes(restaurantName, (error, results) => {
+app.post('/:restaurantName/:restaurantID/menu', (req, res) => {
+  const { restaurantName, restaurantID } = req.params;
+  const restaurantData = req.body;
+  const dishesData = Object.assign(restaurantData, { restaurantID });
+  console.log(`POST request received for restaurantName: ${restaurantName}, restaurantID: ${restaurantID} with ${JSON.stringify(restaurantData)}`);
+  DBconnection.addDishes([dishesData], (error) => {
     if (error) {
-      response.status(500).send(error.message);
+      console.log(error);
+      res.status(500).send(error);
     } else {
-      response.status(200).send(results);
+      res.status(201).end();
     }
   });
-
 });
 
-// the length of results we get back tells us how many different photos there are for the given dish at the given restaurant
-app.get('/menus/:restaurantName/dishes/:dishId/photos', (request, response) => {
-
-  var restaurantName = request.params.restaurantName;
-  var dishId = request.params.dishId;
-  // console.log('dishID being passed in with ajax request>>>', dishId);
-
-  db.getPhotosForDish(restaurantName, dishId, (error, results) => {
+app.put('/:restaurantName/:restaurantID/menu', (req, res) => {
+  const { restaurantName, restaurantID } = req.params;
+  const restaurantData = req.body;
+  const { dishID } = restaurantData;
+  delete restaurantData.dishID;
+  console.log(`PUT request received for restaurantName: ${restaurantName}, restaurantID: ${restaurantID} with ${JSON.stringify(restaurantData)}`);
+  DBconnection.updateDish(dishID, restaurantData, (error) => {
     if (error) {
-      response.status(500).send(error.message);
+      res.status(500).send(error);
     } else {
-      response.status(200).send(results);
+      res.status(201).end();
     }
   });
-
 });
 
-// use the id of the first record returned from photos, to search for its url
-app.get('/photos/:photoid', (request, response) => {
-
-  var photoId = request.params.photoid;
-
-  db.getPhotoData(photoId, (error, results) => {
+app.delete('/:restaurantName/:restaurantID/menu', (req, res) => {
+  const { restaurantName, restaurantID } = req.params;
+  const { dishID } = req.body;
+  console.log(`DELETE request received for restaurantName: ${restaurantName}, restaurantID: ${restaurantID}`);
+  DBconnection.deleteDish(dishID, (error) => {
     if (error) {
-      response.status(500).send(error.message);
+      console.log(error);
+      res.status(500).send(error);
     } else {
-      response.status(200).send(results);
+      res.status(204).end();
     }
   });
-
 });
 
-app.listen(2000, () => {
-  console.log('listening on port 2000');
+app.listen(PORT, () => {
+  console.log(`===========> listening on PORT ${PORT}`);
 });
