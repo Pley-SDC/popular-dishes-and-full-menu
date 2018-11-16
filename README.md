@@ -34,10 +34,10 @@ npm install
 
 | Command | Method | Endpoint | Body | Purpose |
 | ------- | ------ | -------- | ---- | ------- |
-| Create | POST | '/:restaurantName/:restaurantID/menu' | JSON | Add new restaurant to platform |
+| Create | POST | '/:restaurantName/:restaurantID/menu' | JSON | Add new dishes to restaurant |
 | Read | GET | '/:restaurantName/:restaurantID/menu' | none | Get data for given restaurant (defined in endpoint) |
-| Update | PUT | '/:restaurantName/:restaurantID/menu' | JSON | Update restaurants information |
-| Delete | DELETE | '/:restaurantName/:restaurantID/menu' | none | Delete restaurant from platform |
+| Update | PUT | '/:restaurantName/:restaurantID/menu' | JSON | Update dish information |
+| Delete | DELETE | '/:restaurantName/:restaurantID/menu' | none | Delete dish from platform |
 
 ## Acknowledgements
 - Thanks to everyone on the YumpSF team for builing awesome modules that bring to life the YumpSF verison of the Yelp restaurant page user experience! 

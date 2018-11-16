@@ -28,12 +28,14 @@ const addRestaurant = (names, callback) => {
 };
 
 const addDishes = (dishesData, callback) => {
-  const values = [dishesData.map(dish => [dish.restaurant_id,
+  const values = [dishesData.map(dish => [
+    dish.restaurant_id,
     dish.dish_name,
     dish.price,
     dish.photo_url,
     dish.number_of_photos,
-    dish.number_of_reviews])];
+    dish.number_of_reviews]),
+  ];
   DBconnection.query('INSERT INTO dishes (restaurant_id, dish_name, price, photo_url, number_of_photos, number_of_reviews) VALUES ?', values, (error, result) => {
     if (error) {
       callback(error, null);

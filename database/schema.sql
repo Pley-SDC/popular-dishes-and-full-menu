@@ -16,5 +16,7 @@ CREATE TABLE dishes (
   price DECIMAL(5,2) NOT NULL,
   photo_url VARCHAR(200) NOT NULL,
   number_of_photos INTEGER NOT NULL,
-  number_of_reviews INTEGER NOT NULL 
+  number_of_reviews INTEGER NOT NULL,
+  FOREIGN KEY (restaurant_id) REFERENCES
+    restaurants (id)
 );
