@@ -1,53 +1,77 @@
+const fs = require('fs');
 const faker = require('faker');
-const DBconnection = require('./index');
+const path = require('path');
 
-const seedDatabase = (quantity) => {
-  const restaurantNames = [];
-  const dishesData = [];
+const restaurantStream = fs.createWriteStream(path.join(__dirname, '/restaurants.csv'));
+const dishesStream = fs.createWriteStream(path.join(__dirname, '/dishes.csv'));
+restaurantStream.write('restaurant_name\n');
+dishesStream.write('restaurant_id, dish_name, price, number_of_photos, number_of_reviews\n');
 
-  const createRestaurantNames = () => {
-    for (let i = 0; i < quantity; i += 1) {
-      restaurantNames.push(faker.company.companyName());
-    }
-  };
+/* =======================>>>> Constraints <<<<<<<=========================== */
 
-  const createDishesData = () => {
-    for (let i = 1; i <= quantity; i += 1) {
-      for (let j = 0; j < 15; j += 1) {
-        const jpegNumber = Math.floor((Math.random() * 34) + 1);
-        const dishObject = {
-          restaurant_id: i,
-          dish_name: faker.lorem.word(),
-          price: (Math.random() * 49 + 1).toFixed(2),
-          photo_url: `https://s3.us-east-2.amazonaws.com/yumpsfphotos/${jpegNumber}.jpeg`,
-          number_of_photos: Math.floor((Math.random() * 60) + 1),
-          number_of_reviews: Math.floor((Math.random() * 100) + 1),
-        };
-        dishesData.push(dishObject);
+const numberOfRestaurants = 1000000;
+const maximumDishesPerRestaurant = 20;
+const minimumDishesPerRestaurant = 3;
+const maximumPhotosPerDish = 60;
+const maximumReviewsPerDish = 60;
+
+/* =======================>>>> Constraints <<<<<<<=========================== */
+
+let restaurantIndex = 0;
+let dishIndex;
+
+const createNumber = (min, max) => Math.floor(Math.random() * (max - min) + min);
+
+const createDishesDataCSV = () => {
+  while (restaurantIndex > 0) {
+    const NumberOfDishes = createNumber(minimumDishesPerRestaurant,
+      maximumDishesPerRestaurant);
+    dishIndex = 0;
+    while (dishIndex < NumberOfDishes) {
+      // const jpegNumber = Math.floor((Math.random() * 34) + 1);
+      const dishName = faker.lorem.word();
+      const price = (Math.random() * 50 + 1).toFixed(2);
+      const numberOfPhotos = createNumber(1, maximumPhotosPerDish);
+      const numberOfReviews = createNumber(1, maximumReviewsPerDish);
+      // create random image variable
+      const dishString = `${restaurantIndex}, ${dishName}, ${price}, ${numberOfPhotos}, ${numberOfReviews}`;
+      if (!dishesStream.write(`${dishString}\n`)) {
+        console.log('========> Error! creating dishes at restaurantIndex: ', restaurantIndex, ' dishIndex: ', dishIndex);
+        return;
       }
+      dishIndex += 1;
     }
-  };
-
-  createRestaurantNames();
-  createDishesData();
-
-  DBconnection.addRestaurant(restaurantNames, (error) => {
-    if (error) {
-      console.log('========> Error adding restaurants to database: ', error);
-    } else {
-      console.log('========> Success adding restaurants to database');
-    }
-  });
-
-  DBconnection.addDishes(dishesData, (error) => {
-    if (error) {
-      console.log('========> Error adding dishes to database: ', error);
-      process.exit();
-    } else {
-      console.log('========> Success adding dishes to database: ');
-      process.exit();
-    }
+    restaurantIndex -= 1;
+  }
+  dishesStream.end(() => {
+    console.log(`=============> Success generating dishes for restaurant ${restaurantIndex}`);
   });
 };
 
-seedDatabase(100);
+const createRestaurantNamesCSV = () => {
+  while (restaurantIndex < numberOfRestaurants) {
+    if (!restaurantStream.write(`${faker.company.companyName()}\n`)) {
+      console.log('========> Error! creating restaurants at restaurantIndex: ', restaurantIndex, ' dishIndex: ', dishIndex);
+      return;
+    }
+    restaurantIndex += 1;
+  }
+  restaurantStream.end(() => {
+    console.log(`=============> Success generating restaurants ${restaurantIndex}`);
+    createDishesDataCSV();
+  });
+};
+
+restaurantStream.on('drain', () => {
+  restaurantIndex += 1;
+  console.log('===========> restarting restaurant name generator');
+  createRestaurantNamesCSV();
+});
+
+dishesStream.on('drain', () => {
+  dishIndex += 1;
+  console.log('===========> restarting dishes generator');
+  createDishesDataCSV();
+});
+
+createRestaurantNamesCSV();
