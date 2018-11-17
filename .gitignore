@@ -31,3 +31,6 @@ bundle.js
 spec/components/subtract.test.js
 client/src/components/subtract.js 
 
+# csv files
+database/data
+
