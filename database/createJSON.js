@@ -7,14 +7,16 @@ const stream = fs.createWriteStream(path.join(__dirname, './data/noSqlData/nosql
 
 /* ==============================>>>>>>>>>> Constraints <<<<<<<<<<============================== */
 
-const numberOfRestaurants = 100;
+const numberOfRestaurants = 2;
 const maximumDishesPerRestaurant = 20;
 const minimumDishesPerRestaurant = 3;
 const availableImages = 499;
 const maximumDishPrice = 50;
 const minimumDishPrice = 10;
-const fractionOfPopularRestuarants = 10;
 
+/* ======>>>>>> popular restaurant <<<<<<======= */
+
+const fractionOfRestaurants = 10;
 const normalRestaurant = {
   minimumReviews: 0,
   maximumReviews: 5,
@@ -62,7 +64,7 @@ let imageIndex = 0;
 let constraint;
 
 const createNumber = (min, max) => Math.floor(Math.random() * (max - min) + min);
-const checkIfPopularRestaurant = index => index % fractionOfPopularRestuarants === 0;
+const checkIfPopularRestaurant = index => index % fractionOfRestaurants === 0;
 
 const createJSONData = () => {
   const createDishImage = () => {
@@ -121,6 +123,7 @@ const createJSONData = () => {
       dishesArray.push(createDish());
       dishIndex += 1;
     }
+    dishIndex = 0;
     return dishesArray;
   };
 

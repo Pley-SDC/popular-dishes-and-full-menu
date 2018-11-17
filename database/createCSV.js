@@ -17,10 +17,12 @@ imageStream.write('dish_id, user_name, image_url, image_date\n');
 
 /* ======>>>>>> normal restaurant <<<<<<======= */
 
-const numberOfRestaurants = 100;
+const numberOfRestaurants = 2;
 const maximumDishesPerRestaurant = 20;
 const minimumDishesPerRestaurant = 3;
 const availableImages = 499;
+const maximumDishPrice = 50;
+const minimumDishPrice = 10;
 
 /* ======>>>>>> popular restaurant <<<<<<======= */
 
@@ -106,7 +108,8 @@ const createDishesDataCSV = () => {
     dishIndex = 0;
     while (dishIndex < NumberOfDishes) {
       const dishName = faker.lorem.words();
-      const price = (Math.random() * (50 - 10) + 10).toPrecision(4);
+      const price = (Math.random() * (maximumDishPrice - minimumDishPrice) + minimumDishPrice)
+        .toPrecision(4);
       const dishString = `${restaurantIndex}, ${dishName}, ${price}`;
       if (!dishesStream.write(`${dishString}\n`)) {
         return;
