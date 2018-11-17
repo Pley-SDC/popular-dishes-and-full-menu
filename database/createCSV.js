@@ -3,10 +3,10 @@ const faker = require('faker');
 const path = require('path');
 const { sprintf } = require('sprintf-js');
 
-const restaurantStream = fs.createWriteStream(path.join(__dirname, './data/restaurants.csv'));
-const dishesStream = fs.createWriteStream(path.join(__dirname, './data/dishes.csv'));
-const reviewsStream = fs.createWriteStream(path.join(__dirname, './data/reviews.csv'));
-const imageStream = fs.createWriteStream(path.join(__dirname, './data/images.csv'));
+const restaurantStream = fs.createWriteStream(path.join(__dirname, './data/sqlData/restaurants.csv'));
+const dishesStream = fs.createWriteStream(path.join(__dirname, './data/sqlData/dishes.csv'));
+const reviewsStream = fs.createWriteStream(path.join(__dirname, './data/sqlData/reviews.csv'));
+const imageStream = fs.createWriteStream(path.join(__dirname, './data/sqlData/images.csv'));
 
 restaurantStream.write('restaurant_name\n');
 dishesStream.write('restaurant_id, dish_name, dish_price\n');
@@ -30,14 +30,14 @@ const normalRestaurant = {
   maximumReviews: 5,
   minimumImages: 0,
   maximumImages: 5,
-}
+};
 
 const popularRestaurant = {
   minimumReviews: 5,
   maximumReviews: 40,
   minimumImages: 5,
   maximumImages: 40,
-}
+};
 
 
 /* ==============================>>>>>>>>>> Constraints <<<<<<<<<<============================== */
@@ -56,7 +56,7 @@ const checkIfPopularRestaurant = index => index % fractionOfRestuarants === 0;
 
 const createDishImagesCSV = () => {
   while (imageDishCounter < dishCounter) {
-    numberOfImages = createNumber(constraint['minimumImages'], constraint['maximumImages']);
+    numberOfImages = createNumber(constraint.minimumImages, constraint.maximumImages);
     while (numberOfImages > 0) {
       const imageNumber = sprintf('%04s', createNumber(0, availableImages));
       const userName = faker.name.findName();
@@ -79,7 +79,7 @@ const createDishImagesCSV = () => {
 
 const createDishReviewsCSV = () => {
   while (reviewDishCounter < dishCounter) {
-    numberOfReviews = createNumber(constraint['minimumReviews'], constraint['maximumReviews']);
+    numberOfReviews = createNumber(constraint.minimumReviews, constraint.maximumReviews);
     while (numberOfReviews > 0) {
       const review = faker.lorem.sentences();
       const userName = faker.name.findName();
@@ -146,22 +146,22 @@ const createRestaurantNamesCSV = () => {
 };
 
 restaurantStream.on('drain', () => {
-  restaurantIndex += 1;
+  // restaurantIndex += 1;
   createRestaurantNamesCSV();
 });
 
 dishesStream.on('drain', () => {
-  dishIndex += 1;
+  // dishIndex += 1;
   createDishesDataCSV();
 });
 
 reviewsStream.on('drain', () => {
-  reviewDishCounter += 1;
+  // reviewDishCounter += 1;
   createDishReviewsCSV();
 });
 
 imageStream.on('drain', () => {
-  imageDishCounter += 1;
+  // imageDishCounter += 1;
   createDishImagesCSV();
 });
 
