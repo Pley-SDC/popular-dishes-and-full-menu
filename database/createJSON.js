@@ -15,7 +15,7 @@ const maximumDishPrice = 50;
 const minimumDishPrice = 10;
 const fractionOfPopularRestuarants = 10;
 
-const normalResataurant = {
+const normalRestaurant = {
   minimumReviews: 0,
   maximumReviews: 5,
   minimumImages: 0,
