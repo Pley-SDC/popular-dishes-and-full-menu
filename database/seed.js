@@ -9,30 +9,35 @@ const reviewsStream = fs.createWriteStream(path.join(__dirname, './data/reviews.
 const imageStream = fs.createWriteStream(path.join(__dirname, './data/images.csv'));
 
 restaurantStream.write('restaurant_name\n');
-dishesStream.write('restaurant_id, dish_name, price, number_of_photos, number_of_reviews\n');
-reviewsStream.write('dish_id, review_text\n');
-imageStream.write('dish_id, image_url\n');
+dishesStream.write('restaurant_id, dish_name, dish_price\n');
+reviewsStream.write('dish_id, user_name, review_text, review_date\n');
+imageStream.write('dish_id, user_name, image_url, image_date\n');
 
 /* ==============================>>>>>>>>>> Constraints <<<<<<<<<<============================== */
 
 /* ======>>>>>> normal restaurant <<<<<<======= */
 
-const numberOfRestaurants = 100000;
+const numberOfRestaurants = 100;
 const maximumDishesPerRestaurant = 20;
 const minimumDishesPerRestaurant = 3;
-const maximumImagesPerDish = 5;
-const minimumImagesPerDish = 1;
-const maximumReviewsPerDish = 5;
-const minimumReviewsPerDish = 0;
 const availableImages = 499;
 
 /* ======>>>>>> popular restaurant <<<<<<======= */
 
 const fractionOfRestuarants = 10;
-const maximumImagesPerDishPopularRestuarant = 40;
-const minimumImagesPerDishPopularRestuarant = 5;
-const maximumReviewsPerDishPopularRestuarant = 40;
-const minimumReviewsPerDishPopularRestuarant = 5;
+const normalRestaurant = {
+  minimumReviews: 0,
+  maximumReviews: 5,
+  minimumImages: 0,
+  maximumImages: 5,
+}
+
+const popularRestaurant = {
+  minimumReviews: 5,
+  maximumReviews: 40,
+  minimumImages: 5,
+  maximumImages: 40,
+}
 
 
 /* ==============================>>>>>>>>>> Constraints <<<<<<<<<<============================== */
@@ -42,22 +47,21 @@ let dishIndex;
 let dishCounter = 0;
 let reviewDishCounter = 0;
 let imageDishCounter = 0;
+let numberOfReviews;
+let numberOfImages;
+let constraint;
 
 const createNumber = (min, max) => Math.floor(Math.random() * (max - min) + min);
 const checkIfPopularRestaurant = index => index % fractionOfRestuarants === 0;
 
 const createDishImagesCSV = () => {
-  let numberOfImages;
   while (imageDishCounter < dishCounter) {
-    if (checkIfPopularRestaurant(imageDishCounter)) {
-      numberOfImages = createNumber(minimumImagesPerDishPopularRestuarant,
-        maximumImagesPerDishPopularRestuarant);
-    } else {
-      numberOfImages = createNumber(minimumImagesPerDish, maximumImagesPerDish);
-    }
+    numberOfImages = createNumber(constraint['minimumImages'], constraint['maximumImages']);
     while (numberOfImages > 0) {
       const imageNumber = sprintf('%04s', createNumber(0, availableImages));
-      const image = `${imageDishCounter}, https://s3-us-west-1.amazonaws.com/pley-dish-images/${imageNumber}.jpg`;
+      const userName = faker.name.findName();
+      const date = faker.date.past();
+      const image = `${imageDishCounter}, ${userName},  https://s3-us-west-1.amazonaws.com/pley-dish-images/${imageNumber}.jpg, ${date}`;
       if (!imageStream.write(`${image}\n`)) {
         return;
       }
@@ -74,17 +78,13 @@ const createDishImagesCSV = () => {
 };
 
 const createDishReviewsCSV = () => {
-  let numberOfReviews;
   while (reviewDishCounter < dishCounter) {
-    if (checkIfPopularRestaurant(reviewDishCounter)) {
-      numberOfReviews = createNumber(minimumReviewsPerDishPopularRestuarant,
-        maximumReviewsPerDishPopularRestuarant);
-    } else {
-      numberOfReviews = createNumber(minimumReviewsPerDish, maximumReviewsPerDish); 
-    }
+    numberOfReviews = createNumber(constraint['minimumReviews'], constraint['maximumReviews']);
     while (numberOfReviews > 0) {
       const review = faker.lorem.sentences();
-      if (!reviewsStream.write(`${reviewDishCounter}, ${review}\n`)) {
+      const userName = faker.name.findName();
+      const date = faker.date.past();
+      if (!reviewsStream.write(`${reviewDishCounter}, ${userName}, ${review}, ${date}\n`)) {
         return;
       }
       numberOfReviews -= 1;
@@ -106,7 +106,7 @@ const createDishesDataCSV = () => {
     dishIndex = 0;
     while (dishIndex < NumberOfDishes) {
       const dishName = faker.lorem.words();
-      const price = (Math.random() * 50 + 1).toFixed(2);
+      const price = (Math.random() * (50 - 10) + 10).toPrecision(4);
       const dishString = `${restaurantIndex}, ${dishName}, ${price}`;
       if (!dishesStream.write(`${dishString}\n`)) {
         return;
@@ -126,6 +126,11 @@ const createDishesDataCSV = () => {
 
 const createRestaurantNamesCSV = () => {
   while (restaurantIndex < numberOfRestaurants) {
+    if (checkIfPopularRestaurant(restaurantIndex)) {
+      constraint = popularRestaurant;
+    } else {
+      constraint = normalRestaurant;
+    }
     if (!restaurantStream.write(`${faker.company.companyName()}\n`)) {
       return;
     }
