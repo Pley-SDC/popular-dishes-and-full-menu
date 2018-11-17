@@ -26,6 +26,7 @@ dist/
 public/
 public/bundle.js 
 bundle.js 
+database/data
 
 # testing practice
 spec/components/subtract.test.js
