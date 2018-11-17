@@ -32,6 +32,5 @@ spec/components/subtract.test.js
 client/src/components/subtract.js 
 
 # csv files
-database/dishes.csv
-database/restaurants.csv
+database/data
 
