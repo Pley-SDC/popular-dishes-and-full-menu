@@ -134,6 +134,7 @@ const createJSONData = () => {
       constraint = normalRestaurant;
     }
     const restaurantObject = {
+      id: restaurantIndex,
       restaurant_name: faker.company.companyName(),
       dishes: createDishesArray(),
     };

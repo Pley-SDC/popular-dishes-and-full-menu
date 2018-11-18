@@ -5,6 +5,7 @@ mongoose.connect('mongodb://localhost:27017/sdc', { useNewUrlParser: true });
 const { Schema } = mongoose;
 
 const restaurantSchema = new Schema({
+  id: Number,
   restaurant_name: String,
   dishes: [{
     dish_name: String,
