@@ -7,8 +7,8 @@ const stream = fs.createWriteStream(path.join(__dirname, './data/noSqlData/nosql
 
 /* ==============================>>>>>>>>>> Constraints <<<<<<<<<<============================== */
 
-const numberOfRestaurants = 2;
-const maximumDishesPerRestaurant = 20;
+const numberOfRestaurants = 10;
+const maximumDishesPerRestaurant = 10;
 const minimumDishesPerRestaurant = 3;
 const availableImages = 499;
 const maximumDishPrice = 50;
@@ -26,9 +26,9 @@ const normalRestaurant = {
 
 const popularRestaurant = {
   minimumReviews: 5,
-  maximumReviews: 40,
+  maximumReviews: 10,
   minimumImages: 5,
-  maximumImages: 40,
+  maximumImages: 10,
 };
 
 
@@ -90,7 +90,7 @@ const createJSONData = () => {
   const createDishReview = () => {
     return {
       user_name: faker.name.findName(),
-      review_text: faker.lorem.sentences(),
+      review_text: faker.lorem.sentence(),
       date: faker.date.past(),
     };
   };
@@ -141,10 +141,11 @@ const createJSONData = () => {
     if (restaurantIndex % 100000 === 0) {
       console.log(`Created data for ${restaurantIndex} restaurants`);
     }
-    if (!stream.write(JSON.stringify(restaurantObject))) {
+    if (!stream.write(`${JSON.stringify(restaurantObject)}`)) {
       return;
     }
   }
+  stream.end(() => console.log(`=========>>> Success generating data for ${restaurantIndex} restaurants`));
 };
 
 stream.on('drain', () => {
@@ -152,3 +153,5 @@ stream.on('drain', () => {
 });
 
 createJSONData();
+
+// stream.write(']');
