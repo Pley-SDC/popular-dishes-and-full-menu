@@ -18,7 +18,7 @@ const restaurant = "CREATE TABLE IF NOT EXISTS restaurants (id int, restaurant_n
 
 /* ==============================>>>>>>>>>> Constraints <<<<<<<<<<============================== */
 
-const numberOfRestaurants = 10000000;
+const numberOfRestaurants = 10000;
 const maximumDishesPerRestaurant = 10;
 const minimumDishesPerRestaurant = 3;
 const availableImages = 499;
@@ -69,10 +69,18 @@ const popularRestaurant = {
 
 let restaurantIndex = 1;
 let dishIndex = 0;
+let restaurantObject;
 
 let reviewIndex = 0;
 let imageIndex = 0;
 let constraint;
+let imageNumber;
+let imagesArray;
+let numberOfImages;
+let numberOfReviews;
+let reviewsArray;
+let numberOfDishes;
+let dishesArray;
 
 const createNumber = (min, max) => Math.floor(Math.random() * (max - min) + min);
 const checkIfPopularRestaurant = index => index % fractionOfRestaurants === 0;
@@ -80,7 +88,7 @@ const cleanNameFromApostrophe = name => name.split('').filter(letter => letter !
 
 const createJSONData = () => {
   const createDishImage = () => {
-    const imageNumber = sprintf('%04s', createNumber(0, availableImages));
+    imageNumber = sprintf('%04s', createNumber(0, availableImages));
     return {
       user_name: cleanNameFromApostrophe(faker.name.findName()),
       url: `${imageIndex}, https://s3-us-west-1.amazonaws.com/pley-dish-images/${imageNumber}.jpg`,
@@ -89,8 +97,8 @@ const createJSONData = () => {
   };
 
   const createDishImagesArray = () => {
-    const numberOfImages = createNumber(constraint.minimumImages, constraint.maximumImages);
-    const imagesArray = [];
+    numberOfImages = createNumber(constraint.minimumImages, constraint.maximumImages);
+    imagesArray = [];
     while (imagesArray < numberOfImages) {
       imagesArray.push(createDishImage());
       imageIndex += 1;
@@ -108,8 +116,8 @@ const createJSONData = () => {
   };
 
   const createDishReviewsArray = () => {
-    const numberOfReviews = createNumber(constraint.minimumReviews, constraint.maximumReviews);
-    const reviewsArray = [];
+    numberOfReviews = createNumber(constraint.minimumReviews, constraint.maximumReviews);
+    reviewsArray = [];
     while (reviewIndex < numberOfReviews) {
       reviewsArray.push(createDishReview());
       reviewIndex += 1;
@@ -129,8 +137,8 @@ const createJSONData = () => {
   };
 
   const createDishesArray = () => {
-    const numberOfDishes = createNumber(minimumDishesPerRestaurant, maximumDishesPerRestaurant);
-    const dishesArray = [];
+    numberOfDishes = createNumber(minimumDishesPerRestaurant, maximumDishesPerRestaurant);
+    dishesArray = [];
     while (dishIndex < numberOfDishes) {
       dishesArray.push(createDish());
       dishIndex += 1;
@@ -140,19 +148,19 @@ const createJSONData = () => {
   };
 
   (function loop() {
-    if (restaurantIndex < numberOfRestaurants) {
+    if (restaurantIndex <= numberOfRestaurants) {
       if (checkIfPopularRestaurant(restaurantIndex)) {
         constraint = popularRestaurant;
       } else {
         constraint = normalRestaurant;
       }
-      let restaurantObject = {
+      restaurantObject = {
         id: restaurantIndex,
         restaurant_name: cleanNameFromApostrophe(faker.company.companyName()),
         dishes: createDishesArray(),
       };
       restaurantIndex += 1;
-      if (restaurantIndex % 100000 === 0) {
+      if (restaurantIndex % 10000 === 0) {
         console.log(`Created data for ${restaurantIndex} restaurants`);
       }
       let query = `INSERT INTO test2.restaurants JSON '${JSON.stringify(restaurantObject)}'`
