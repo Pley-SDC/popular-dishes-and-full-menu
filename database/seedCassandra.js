@@ -2,12 +2,23 @@ const fs = require('fs');
 const faker = require('faker');
 const path = require('path');
 const { sprintf } = require('sprintf-js');
+const cassandra = require('cassandra-driver');
+// const client = require('./cassandraScript.js');
 
-const stream = fs.createWriteStream(path.join(__dirname, './data/noSqlData/nosql.json'));
+// const stream = fs.createWriteStream(path.join(__dirname, './data/noSqlData/nosql.json'));
+
+
+const client = new cassandra.Client({contactPoints: ['127.0.0.1:9042']});
+
+const keyspace = "CREATE KEYSPACE IF NOT EXISTS test2 WITH REPLICATION = {'class': 'SimpleStrategy', 'replication_factor': 3}";
+const image = "CREATE TYPE IF NOT EXISTS image (user_name text, url text, date timestamp)";
+const review = "CREATE TYPE IF NOT EXISTS review (user_name text, review_text text, date timestamp)";
+const dish = "CREATE TYPE IF NOT EXISTS dish (dish_name text, dish_price decimal, dish_reviews list<FROZEN <review>>, dish_images list<FROZEN <image>>)";
+const restaurant = "CREATE TABLE IF NOT EXISTS restaurants (id int, restaurant_name text, dishes list<FROZEN <dish>>, PRIMARY KEY(id, restaurant_name))";
 
 /* ==============================>>>>>>>>>> Constraints <<<<<<<<<<============================== */
 
-const numberOfRestaurants = 1;
+const numberOfRestaurants = 1000;
 const maximumDishesPerRestaurant = 10;
 const minimumDishesPerRestaurant = 3;
 const availableImages = 499;
@@ -16,7 +27,7 @@ const minimumDishPrice = 10;
 
 /* ======>>>>>> popular restaurant <<<<<<======= */
 
-const fractionOfRestaurants = 10;
+const fractionOfRestaurants = 100000;
 const normalRestaurant = {
   minimumReviews: 0,
   maximumReviews: 5,
@@ -56,7 +67,7 @@ const popularRestaurant = {
 
  ==============================>>>>>>>>>> Data shape <<<<<<<<<<============================== */
 
-let restaurantIndex = 0;
+let restaurantIndex = 1;
 let dishIndex = 0;
 
 let reviewIndex = 0;
@@ -128,32 +139,45 @@ const createJSONData = () => {
     return dishesArray;
   };
 
-  while (restaurantIndex < numberOfRestaurants) {
-    if (checkIfPopularRestaurant(restaurantIndex)) {
-      constraint = popularRestaurant;
-    } else {
-      constraint = normalRestaurant;
+  (function loop() {
+    if (restaurantIndex < numberOfRestaurants) {
+      if (checkIfPopularRestaurant(restaurantIndex)) {
+        constraint = popularRestaurant;
+      } else {
+        constraint = normalRestaurant;
+      }
+      let restaurantObject = {
+        id: restaurantIndex,
+        restaurant_name: cleanNameFromApostrophe(faker.company.companyName()),
+        dishes: createDishesArray(),
+      };
+      restaurantIndex += 1;
+      if (restaurantIndex % 100 === 0) {
+        console.log(`Created data for ${restaurantIndex} restaurants`);
+      }
+      let query = `INSERT INTO test2.restaurants JSON '${JSON.stringify(restaurantObject)}'`
+      let promise = new Promise((resolve) => {
+        client.execute(query);
+        resolve();
+      })
+      .then(() => loop());
     }
-    const restaurantObject = {
-      id: restaurantIndex,
-      restaurant_name: cleanNameFromApostrophe(faker.company.companyName()),
-      dishes: createDishesArray(),
-    };
-    restaurantIndex += 1;
-    if (restaurantIndex % 100000 === 0) {
-      console.log(`Created data for ${restaurantIndex} restaurants`);
-    }
-    if (!stream.write(`${JSON.stringify(restaurantObject)}`)) {
-      return;
-    }
-  }
-  stream.end(() => console.log(`=========>>> Success generating data for ${restaurantIndex} restaurants`));
+
+  })();
 };
 
-stream.on('drain', () => {
-  createJSONData();
-});
+client.execute(keyspace)
+  .catch(error => console.log('error creating keyspace', error))
+  .then(() => client.execute('USE test2'))
+  .then(() => client.execute(image))
+  .then(() => client.execute(review))
+  .then(() => client.execute(dish))
+  .then(() => client.execute(restaurant))
+  .then(() => createJSONData())
 
-createJSONData();
+
+
+// console.log(`=========>>> Success generating data for ${restaurantIndex} restaurants`);
+// process.exit();
 
 // stream.write(']');

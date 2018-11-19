@@ -65,13 +65,12 @@ let constraint;
 
 const createNumber = (min, max) => Math.floor(Math.random() * (max - min) + min);
 const checkIfPopularRestaurant = index => index % fractionOfRestaurants === 0;
-const cleanNameFromApostrophe = name => name.split('').filter(letter => letter !== '\'').join('');
 
 const createJSONData = () => {
   const createDishImage = () => {
     const imageNumber = sprintf('%04s', createNumber(0, availableImages));
     return {
-      user_name: cleanNameFromApostrophe(faker.name.findName()),
+      user_name: faker.name.findName(),
       url: `${imageIndex}, https://s3-us-west-1.amazonaws.com/pley-dish-images/${imageNumber}.jpg`,
       date: faker.date.past(),
     };
@@ -90,7 +89,7 @@ const createJSONData = () => {
 
   const createDishReview = () => {
     return {
-      user_name: cleanNameFromApostrophe(faker.name.findName()),
+      user_name: faker.name.findName(),
       review_text: faker.lorem.sentence(),
       date: faker.date.past(),
     };
@@ -136,7 +135,7 @@ const createJSONData = () => {
     }
     const restaurantObject = {
       id: restaurantIndex,
-      restaurant_name: cleanNameFromApostrophe(faker.company.companyName()),
+      restaurant_name: faker.company.companyName(),
       dishes: createDishesArray(),
     };
     restaurantIndex += 1;
