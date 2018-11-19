@@ -3,7 +3,7 @@ const faker = require('faker');
 const path = require('path');
 const { sprintf } = require('sprintf-js');
 
-const stream = fs.createWriteStream(path.join(__dirname, './data/noSqlData/nosql.json'));
+const stream = fs.createWriteStream(path.join(__dirname, './data/noSqlData/nosql.csv'));
 
 /* ==============================>>>>>>>>>> Constraints <<<<<<<<<<============================== */
 

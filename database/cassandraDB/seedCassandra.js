@@ -18,7 +18,7 @@ const restaurant = "CREATE TABLE IF NOT EXISTS restaurants (id int, restaurant_n
 
 /* ==============================>>>>>>>>>> Constraints <<<<<<<<<<============================== */
 
-const numberOfRestaurants = 10000;
+const numberOfRestaurants = 2;
 const maximumDishesPerRestaurant = 10;
 const minimumDishesPerRestaurant = 3;
 const availableImages = 499;
@@ -91,7 +91,7 @@ const createJSONData = () => {
     imageNumber = sprintf('%04s', createNumber(0, availableImages));
     return {
       user_name: cleanNameFromApostrophe(faker.name.findName()),
-      url: `${imageIndex}, https://s3-us-west-1.amazonaws.com/pley-dish-images/${imageNumber}.jpg`,
+      url: `$https://s3-us-west-1.amazonaws.com/pley-dish-images/${imageNumber}.jpg`,
       date: faker.date.past(),
     };
   };
@@ -160,7 +160,7 @@ const createJSONData = () => {
         dishes: createDishesArray(),
       };
       restaurantIndex += 1;
-      if (restaurantIndex % 10000 === 0) {
+      if (restaurantIndex % 1 === 0) {
         console.log(`Created data for ${restaurantIndex} restaurants`);
       }
       let query = `INSERT INTO test2.restaurants JSON '${JSON.stringify(restaurantObject)}'`
