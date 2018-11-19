@@ -27,7 +27,7 @@ const minimumDishPrice = 10;
 
 /* ======>>>>>> popular restaurant <<<<<<======= */
 
-const fractionOfRestaurants = 100000;
+const fractionOfRestaurants = 10;
 const normalRestaurant = {
   minimumReviews: 0,
   maximumReviews: 5,
