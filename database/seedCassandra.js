@@ -18,7 +18,7 @@ const restaurant = "CREATE TABLE IF NOT EXISTS restaurants (id int, restaurant_n
 
 /* ==============================>>>>>>>>>> Constraints <<<<<<<<<<============================== */
 
-const numberOfRestaurants = 1000;
+const numberOfRestaurants = 10000000;
 const maximumDishesPerRestaurant = 10;
 const minimumDishesPerRestaurant = 3;
 const availableImages = 499;
@@ -152,7 +152,7 @@ const createJSONData = () => {
         dishes: createDishesArray(),
       };
       restaurantIndex += 1;
-      if (restaurantIndex % 100 === 0) {
+      if (restaurantIndex % 100000 === 0) {
         console.log(`Created data for ${restaurantIndex} restaurants`);
       }
       let query = `INSERT INTO test2.restaurants JSON '${JSON.stringify(restaurantObject)}'`
