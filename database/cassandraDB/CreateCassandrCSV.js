@@ -3,7 +3,9 @@ const faker = require('faker');
 const path = require('path');
 const { sprintf } = require('sprintf-js');
 
-const stream = fs.createWriteStream(path.join(__dirname, './data/noSqlData/nosql.csv'));
+const stream = fs.createWriteStream(path.join(__dirname, './data/cassandraGenerated.csv'));
+
+stream.write('id, restaurant_name, dishes\n');
 
 /* ==============================>>>>>>>>>> Constraints <<<<<<<<<<============================== */
 
@@ -71,7 +73,7 @@ const createJSONData = () => {
     const imageNumber = sprintf('%04s', createNumber(0, availableImages));
     return {
       user_name: faker.name.findName(),
-      url: `${imageIndex}, https://s3-us-west-1.amazonaws.com/pley-dish-images/${imageNumber}.jpg`,
+      url: `https://s3-us-west-1.amazonaws.com/pley-dish-images/${imageNumber}.jpg`,
       date: faker.date.past(),
     };
   };
@@ -133,16 +135,13 @@ const createJSONData = () => {
     } else {
       constraint = normalRestaurant;
     }
-    const restaurantObject = {
-      id: restaurantIndex,
-      restaurant_name: faker.company.companyName(),
-      dishes: createDishesArray(),
-    };
+    let restaurant_name = faker.company.companyName();
+    let  dishes = createDishesArray();
     restaurantIndex += 1;
     if (restaurantIndex % 100000 === 0) {
       console.log(`Created data for ${restaurantIndex} restaurants`);
     }
-    if (!stream.write(`${JSON.stringify(restaurantObject)}`)) {
+    if (!stream.write(`${restaurantIndex}, ${restaurant_name}, '${JSON.stringify(dishes)}'\n`)) {
       return;
     }
   }

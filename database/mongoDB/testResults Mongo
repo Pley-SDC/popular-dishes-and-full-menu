@@ -1,0 +1,290 @@
+=======>>> Without Index
+
+db.restaurants.find({"id":1000000}).explain("executionStats");
+
+{
+  "queryPlanner" : {
+    "plannerVersion" : 1,
+    "namespace" : "sdc.restaurants",
+    "indexFilterSet" : false,
+    "parsedQuery" : {
+      "id" : {
+        "$eq" : 1000000
+      }
+    },
+    "winningPlan" : {
+      "stage" : "COLLSCAN",
+      "filter" : {
+        "id" : {
+          "$eq" : 1000000
+        }
+      },
+      "direction" : "forward"
+    },
+    "rejectedPlans" : [ ]
+  },
+  "executionStats" : {
+    "executionSuccess" : true,
+    "nReturned" : 1,
+    "executionTimeMillis" : 221606,
+    "totalKeysExamined" : 0,
+    "totalDocsExamined" : 10000000,
+    "executionStages" : {
+      "stage" : "COLLSCAN",
+      "filter" : {
+        "id" : {
+          "$eq" : 1000000
+        }
+      },
+      "nReturned" : 1,
+      "executionTimeMillisEstimate" : 220202,
+      "works" : 10000002,
+      "advanced" : 1,
+      "needTime" : 10000000,
+      "needYield" : 0,
+      "saveState" : 81345,
+      "restoreState" : 81345,
+      "isEOF" : 1,
+      "invalidates" : 0,
+      "direction" : "forward",
+      "docsExamined" : 10000000
+    }
+  },
+  "serverInfo" : {
+    "host" : "alexandsmacbook.lan",
+    "port" : 27017,
+    "version" : "4.0.3",
+    "gitVersion" : "7ea530946fa7880364d88c8d8b6026bbc9ffa48c"
+  },
+  "ok" : 1
+}
+
+db.restaurants.find({"id":9050000}).explain("executionStats");
+
+{
+  "queryPlanner" : {
+    "plannerVersion" : 1,
+    "namespace" : "sdc.restaurants",
+    "indexFilterSet" : false,
+    "parsedQuery" : {
+      "id" : {
+        "$eq" : 9050000
+      }
+    },
+    "winningPlan" : {
+      "stage" : "COLLSCAN",
+      "filter" : {
+        "id" : {
+          "$eq" : 9050000
+        }
+      },
+      "direction" : "forward"
+    },
+    "rejectedPlans" : [ ]
+  },
+  "executionStats" : {
+    "executionSuccess" : true,
+    "nReturned" : 1,
+    "executionTimeMillis" : 236393,
+    "totalKeysExamined" : 0,
+    "totalDocsExamined" : 10000000,
+    "executionStages" : {
+      "stage" : "COLLSCAN",
+      "filter" : {
+        "id" : {
+          "$eq" : 9050000
+        }
+      },
+      "nReturned" : 1,
+      "executionTimeMillisEstimate" : 234747,
+      "works" : 10000002,
+      "advanced" : 1,
+      "needTime" : 10000000,
+      "needYield" : 0,
+      "saveState" : 81669,
+      "restoreState" : 81669,
+      "isEOF" : 1,
+      "invalidates" : 0,
+      "direction" : "forward",
+      "docsExamined" : 10000000
+    }
+  },
+  "serverInfo" : {
+    "host" : "alexandsmacbook.lan",
+    "port" : 27017,
+    "version" : "4.0.3",
+    "gitVersion" : "7ea530946fa7880364d88c8d8b6026bbc9ffa48c"
+  },
+  "ok" : 1
+}
+
+db.restaurants.find({"id":9500000}).explain("executionStats");
+
+
+{
+  "queryPlanner" : {
+    "plannerVersion" : 1,
+    "namespace" : "sdc.restaurants",
+    "indexFilterSet" : false,
+    "parsedQuery" : {
+      "id" : {
+        "$eq" : 9500000
+      }
+    },
+    "winningPlan" : {
+      "stage" : "COLLSCAN",
+      "filter" : {
+        "id" : {
+          "$eq" : 9500000
+        }
+      },
+      "direction" : "forward"
+    },
+    "rejectedPlans" : [ ]
+  },
+  "executionStats" : {
+    "executionSuccess" : true,
+    "nReturned" : 1,
+    "executionTimeMillis" : 233558,
+    "totalKeysExamined" : 0,
+    "totalDocsExamined" : 10000000,
+    "executionStages" : {
+      "stage" : "COLLSCAN",
+      "filter" : {
+        "id" : {
+          "$eq" : 9500000
+        }
+      },
+      "nReturned" : 1,
+      "executionTimeMillisEstimate" : 231857,
+      "works" : 10000002,
+      "advanced" : 1,
+      "needTime" : 10000000,
+      "needYield" : 0,
+      "saveState" : 81737,
+      "restoreState" : 81737,
+      "isEOF" : 1,
+      "invalidates" : 0,
+      "direction" : "forward",
+      "docsExamined" : 10000000
+    }
+  },
+  "serverInfo" : {
+    "host" : "alexandsmacbook.lan",
+    "port" : 27017,
+    "version" : "4.0.3",
+    "gitVersion" : "7ea530946fa7880364d88c8d8b6026bbc9ffa48c"
+  },
+  "ok" : 1
+}
+
+UpdateOne
+
+received [ { _id: 5bf330710dccc650d14b0586,
+    id: 9050000,
+    restaurant_name: 'Rowe, Dooley and Armstrong',
+    dishes: [ [Object], [Object], [Object], [Object], [Object], [Object] ] } ]
+took 436134 milliseconds
+
+=======>>> With Index
+
+> db.restaurants.find({_id:9999999}).explain("executionStats");
+{
+  "queryPlanner" : {
+    "plannerVersion" : 1,
+    "namespace" : "sdc.restaurants",
+    "indexFilterSet" : false,
+    "parsedQuery" : {
+      "_id" : {
+        "$eq" : 9999999
+      }
+    },
+    "winningPlan" : {
+      "stage" : "IDHACK"
+    },
+    "rejectedPlans" : [ ]
+  },
+  "executionStats" : {
+    "executionSuccess" : true,
+    "nReturned" : 1,
+    "executionTimeMillis" : 0,
+    "totalKeysExamined" : 1,
+    "totalDocsExamined" : 1,
+    "executionStages" : {
+      "stage" : "IDHACK",
+      "nReturned" : 1,
+      "executionTimeMillisEstimate" : 0,
+      "works" : 2,
+      "advanced" : 1,
+      "needTime" : 0,
+      "needYield" : 0,
+      "saveState" : 0,
+      "restoreState" : 0,
+      "isEOF" : 1,
+      "invalidates" : 0,
+      "keysExamined" : 1,
+      "docsExamined" : 1
+    }
+  },
+  "serverInfo" : {
+    "host" : "alexandsmacbook.lan",
+    "port" : 27017,
+    "version" : "4.0.3",
+    "gitVersion" : "7ea530946fa7880364d88c8d8b6026bbc9ffa48c"
+  },
+  "ok" : 1
+}
+
+> db.restaurants.find({_id:9500000}).explain("executionStats");
+{
+  "queryPlanner" : {
+    "plannerVersion" : 1,
+    "namespace" : "sdc.restaurants",
+    "indexFilterSet" : false,
+    "parsedQuery" : {
+      "_id" : {
+        "$eq" : 9500000
+      }
+    },
+    "winningPlan" : {
+      "stage" : "IDHACK"
+    },
+    "rejectedPlans" : [ ]
+  },
+  "executionStats" : {
+    "executionSuccess" : true,
+    "nReturned" : 1,
+    "executionTimeMillis" : 1,
+    "totalKeysExamined" : 1,
+    "totalDocsExamined" : 1,
+    "executionStages" : {
+      "stage" : "IDHACK",
+      "nReturned" : 1,
+      "executionTimeMillisEstimate" : 0,
+      "works" : 2,
+      "advanced" : 1,
+      "needTime" : 0,
+      "needYield" : 0,
+      "saveState" : 0,
+      "restoreState" : 0,
+      "isEOF" : 1,
+      "invalidates" : 0,
+      "keysExamined" : 1,
+      "docsExamined" : 1
+    }
+  },
+  "serverInfo" : {
+    "host" : "alexandsmacbook.lan",
+    "port" : 27017,
+    "version" : "4.0.3",
+    "gitVersion" : "7ea530946fa7880364d88c8d8b6026bbc9ffa48c"
+  },
+  "ok" : 1
+}
+
+UpdateOne
+=========>>> connected to mongoDB
+received [ { _id: 9050000,
+    restaurant_name: 'Pfeffer - Schuster',
+    dishes: [ [Object], [Object], [Object] ] } ]
+took 164 milliseconds

@@ -3,11 +3,11 @@ const faker = require('faker');
 const path = require('path');
 const { sprintf } = require('sprintf-js');
 
-const stream = fs.createWriteStream(path.join(__dirname, './data/noSqlData/nosql.json'));
+const stream = fs.createWriteStream(path.join(__dirname, './data/nosqlRestaurants.json'));
 
 /* ==============================>>>>>>>>>> Constraints <<<<<<<<<<============================== */
 
-const numberOfRestaurants = 1;
+const numberOfRestaurants = 10000000;
 const maximumDishesPerRestaurant = 10;
 const minimumDishesPerRestaurant = 3;
 const availableImages = 499;
@@ -56,12 +56,20 @@ const popularRestaurant = {
 
  ==============================>>>>>>>>>> Data shape <<<<<<<<<<============================== */
 
-let restaurantIndex = 0;
+let restaurantIndex = 1;
 let dishIndex = 0;
 
 let reviewIndex = 0;
 let imageIndex = 0;
 let constraint;
+let imageNumber;
+let numberOfImages;
+let imagesArray;
+let numberOfReviews;
+let reviewsArray;
+let numberOfDishes;
+let dishesArray;
+let restaurantObject;
 
 const createNumber = (min, max) => Math.floor(Math.random() * (max - min) + min);
 const checkIfPopularRestaurant = index => index % fractionOfRestaurants === 0;
@@ -69,18 +77,19 @@ const cleanNameFromApostrophe = name => name.split('').filter(letter => letter !
 
 const createJSONData = () => {
   const createDishImage = () => {
-    const imageNumber = sprintf('%04s', createNumber(0, availableImages));
+    imageNumber = sprintf('%04s', createNumber(0, availableImages));
     return {
+      image_id: imagesArray.length,
       user_name: cleanNameFromApostrophe(faker.name.findName()),
-      url: `${imageIndex}, https://s3-us-west-1.amazonaws.com/pley-dish-images/${imageNumber}.jpg`,
+      url: `https://s3-us-west-1.amazonaws.com/pley-dish-images/${imageNumber}.jpg`,
       date: faker.date.past(),
     };
   };
 
   const createDishImagesArray = () => {
-    const numberOfImages = createNumber(constraint.minimumImages, constraint.maximumImages);
-    const imagesArray = [];
-    while (imagesArray < numberOfImages) {
+    numberOfImages = createNumber(constraint.minimumImages, constraint.maximumImages);
+    imagesArray = [];
+    while (imagesArray.length < numberOfImages) {
       imagesArray.push(createDishImage());
       imageIndex += 1;
     }
@@ -90,6 +99,7 @@ const createJSONData = () => {
 
   const createDishReview = () => {
     return {
+      review_id: reviewIndex,
       user_name: cleanNameFromApostrophe(faker.name.findName()),
       review_text: faker.lorem.sentence(),
       date: faker.date.past(),
@@ -97,8 +107,8 @@ const createJSONData = () => {
   };
 
   const createDishReviewsArray = () => {
-    const numberOfReviews = createNumber(constraint.minimumReviews, constraint.maximumReviews);
-    const reviewsArray = [];
+    numberOfReviews = createNumber(constraint.minimumReviews, constraint.maximumReviews);
+    reviewsArray = [];
     while (reviewIndex < numberOfReviews) {
       reviewsArray.push(createDishReview());
       reviewIndex += 1;
@@ -109,6 +119,7 @@ const createJSONData = () => {
 
   const createDish = () => {
     return {
+      dish_id: dishIndex,
       dish_name: faker.lorem.words(),
       dish_price: (Math.random() * (maximumDishPrice - minimumDishPrice) + minimumDishPrice)
         .toPrecision(4),
@@ -118,8 +129,8 @@ const createJSONData = () => {
   };
 
   const createDishesArray = () => {
-    const numberOfDishes = createNumber(minimumDishesPerRestaurant, maximumDishesPerRestaurant);
-    const dishesArray = [];
+    numberOfDishes = createNumber(minimumDishesPerRestaurant, maximumDishesPerRestaurant);
+    dishesArray = [];
     while (dishIndex < numberOfDishes) {
       dishesArray.push(createDish());
       dishIndex += 1;
@@ -134,8 +145,8 @@ const createJSONData = () => {
     } else {
       constraint = normalRestaurant;
     }
-    const restaurantObject = {
-      id: restaurantIndex,
+    restaurantObject = {
+      _id: restaurantIndex,
       restaurant_name: cleanNameFromApostrophe(faker.company.companyName()),
       dishes: createDishesArray(),
     };
