@@ -1,7 +1,7 @@
 const DBConnection = require('./indexMongoDB');
 
 const findRestaurantById = (_id, callback) => {
-  DBConnection.Restaurant.find({ _id }, (error, results) => {
+  DBConnection.Restaurant.findOne({ _id }, (error, results) => {
     if (error) {
       // console.log('error', error);
       callback(error);

@@ -1,4 +1,5 @@
-const newRelic = require('newrelic');
+// const newRelic = require('newrelic');
+const morgan = require('morgan');
 const express = require('express');
 const path = require('path');
 const bodyParser = require('body-parser');
@@ -7,6 +8,8 @@ const mongoController = require('../database/mongoDB/mongoController.js');
 const app = express();
 
 const PORT = 3004;
+
+app.use(morgan('dev'));
 
 app.use((req, res, next) => {
   res.header('Access-Control-Allow-Origin', '*');

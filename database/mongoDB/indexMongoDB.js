@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const explain = require('mongoose-explain');
+require('mongoose-explain');
 
 mongoose.connect('mongodb://localhost:27017/sdc', { useNewUrlParser: true });
 
