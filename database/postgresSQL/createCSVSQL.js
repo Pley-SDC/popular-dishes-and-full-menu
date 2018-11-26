@@ -3,10 +3,10 @@ const faker = require('faker');
 const path = require('path');
 const { sprintf } = require('sprintf-js');
 
-const restaurantStream = fs.createWriteStream(path.join(__dirname, './data/sqlData/restaurants.csv'));
-const dishesStream = fs.createWriteStream(path.join(__dirname, './data/sqlData/dishes.csv'));
-const reviewsStream = fs.createWriteStream(path.join(__dirname, './data/sqlData/reviews.csv'));
-const imageStream = fs.createWriteStream(path.join(__dirname, './data/sqlData/images.csv'));
+const restaurantStream = fs.createWriteStream(path.join(__dirname, './data2/restaurants.csv'));
+const dishesStream = fs.createWriteStream(path.join(__dirname, './data2/dishes.csv'));
+const reviewsStream = fs.createWriteStream(path.join(__dirname, './data2/reviews.csv'));
+const imageStream = fs.createWriteStream(path.join(__dirname, './data2/images.csv'));
 
 restaurantStream.write('restaurant_name\n');
 dishesStream.write('restaurant_id, dish_name, dish_price\n');
@@ -17,8 +17,8 @@ imageStream.write('dish_id, user_name, image_url, image_date\n');
 
 /* ======>>>>>> normal restaurant <<<<<<======= */
 
-const numberOfRestaurants = 2;
-const maximumDishesPerRestaurant = 20;
+const numberOfRestaurants = 10000000;
+const maximumDishesPerRestaurant = 10;
 const minimumDishesPerRestaurant = 3;
 const availableImages = 499;
 const maximumDishPrice = 50;
@@ -29,16 +29,16 @@ const minimumDishPrice = 10;
 const fractionOfRestuarants = 10;
 const normalRestaurant = {
   minimumReviews: 0,
-  maximumReviews: 5,
+  maximumReviews: 3,
   minimumImages: 0,
-  maximumImages: 5,
+  maximumImages: 3,
 };
 
 const popularRestaurant = {
-  minimumReviews: 5,
-  maximumReviews: 40,
-  minimumImages: 5,
-  maximumImages: 40,
+  minimumReviews: 2,
+  maximumReviews: 7,
+  minimumImages: 2,
+  maximumImages: 7,
 };
 
 
@@ -55,6 +55,7 @@ let constraint;
 
 const createNumber = (min, max) => Math.floor(Math.random() * (max - min) + min);
 const checkIfPopularRestaurant = index => index % fractionOfRestuarants === 0;
+const filterCommas = string => string.split('').filter(letter => letter !== ',').join('');
 
 const createDishImagesCSV = () => {
   while (imageDishCounter < dishCounter) {
@@ -83,7 +84,7 @@ const createDishReviewsCSV = () => {
   while (reviewDishCounter < dishCounter) {
     numberOfReviews = createNumber(constraint.minimumReviews, constraint.maximumReviews);
     while (numberOfReviews > 0) {
-      const review = faker.lorem.sentences();
+      const review = filterCommas(faker.lorem.sentence());
       const userName = faker.name.findName();
       const date = faker.date.past();
       if (!reviewsStream.write(`${reviewDishCounter}, ${userName}, ${review}, ${date}\n`)) {
@@ -107,7 +108,7 @@ const createDishesDataCSV = () => {
       maximumDishesPerRestaurant);
     dishIndex = 0;
     while (dishIndex < NumberOfDishes) {
-      const dishName = faker.lorem.words();
+      const dishName = faker.lorem.word();
       const price = (Math.random() * (maximumDishPrice - minimumDishPrice) + minimumDishPrice)
         .toPrecision(4);
       const dishString = `${restaurantIndex}, ${dishName}, ${price}`;
@@ -134,7 +135,7 @@ const createRestaurantNamesCSV = () => {
     } else {
       constraint = normalRestaurant;
     }
-    if (!restaurantStream.write(`${faker.company.companyName()}\n`)) {
+    if (!restaurantStream.write(`${filterCommas(faker.company.companyName())}\n`)) {
       return;
     }
     restaurantIndex += 1;

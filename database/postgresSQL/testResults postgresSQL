@@ -1,0 +1,101 @@
+=====> Without Index
+
+postgres=# select * from dishes left join reviews on dishes.dish_id = reviews.dish_id WHERE dishes.restaurant_id = 9000009;
+ dish_id  | restaurant_id |  dish_name  | dish_price | review_id | dish_id  |    user_name    |                    review_text                    |               review_date                
+----------+---------------+-------------+------------+-----------+----------+-----------------+---------------------------------------------------+------------------------------------------
+ 54230159 |       9000009 |  est        |      40.51 |  54470766 | 54230159 |  Eula Rippin    |  Accusamus voluptas tempore dolorem.              |  Sat Oct 27 2018 08:05:44 GMT-0700 (PDT)
+ 54230160 |       9000009 |  voluptas   |      27.29 |  54470767 | 54230160 |  Casimir Spinka |  Nemo error porro accusamus aut aut aut deserunt. |  Tue Feb 13 2018 03:12:53 GMT-0800 (PST)
+ 54230161 |       9000009 |  dolorem    |      31.38 |  54470768 | 54230161 |  Michaela Upton |  Exercitationem consequatur sunt.                 |  Thu Jul 12 2018 02:14:42 GMT-0700 (PDT)
+ 54230162 |       9000009 |  voluptatem |      27.96 |           |          |                 |                                                   | 
+ 54230163 |       9000009 |  quaerat    |      28.54 |           |          |                 |                                                   | 
+(5 rows)
+
+Time: 45861.051 ms (00:45.861)
+
+postgres=# select * from dishes left join reviews on dishes.dish_id = reviews.dish_id WHERE dishes.restaurant_id = 9500000;
+ dish_id  | restaurant_id |   dish_name   | dish_price | review_id | dish_id  |     user_name     |                           review_text                           |               review_date                
+----------+---------------+---------------+------------+-----------+----------+-------------------+-----------------------------------------------------------------+------------------------------------------
+ 57242720 |       9500000 |  asperiores   |      11.81 |  57497346 | 57242720 |  Jadyn Yost       |  Rerum repudiandae dolor et commodi ea molestiae.               |  Sat Dec 30 2017 15:40:08 GMT-0800 (PST)
+ 57242720 |       9500000 |  asperiores   |      11.81 |  57497347 | 57242720 |  Nellie Leffler   |  Non odit in rem aut non recusandae facere explicabo.           |  Sun Feb 04 2018 15:05:58 GMT-0800 (PST)
+ 57242723 |       9500000 |  quos         |      45.82 |  57497348 | 57242723 |  Jo Koss          |  Non autem sed consequatur omnis non odit modi nihil veritatis. |  Sun Sep 23 2018 23:44:26 GMT-0700 (PDT)
+ 57242726 |       9500000 |  consequuntur |      47.09 |  57497349 | 57242726 |  Hosea Robel II   |  Eius dolorem qui voluptate non eos.                            |  Mon Dec 18 2017 03:32:36 GMT-0800 (PST)
+ 57242727 |       9500000 |  voluptate    |      48.19 |  57497350 | 57242727 |  Rosario Baumbach |  Tempore aut praesentium nostrum illo et natus in.              |  Sat Jun 30 2018 03:02:30 GMT-0700 (PDT)
+ 57242727 |       9500000 |  voluptate    |      48.19 |  57497351 | 57242727 |  Milo Altenwerth  |  Illum minima et vel ut consequatur.                            |  Mon Oct 08 2018 07:07:04 GMT-0700 (PDT)
+ 57242721 |       9500000 |  sit          |      38.92 |           |          |                   |                                                                 | 
+ 57242725 |       9500000 |  vel          |      13.46 |           |          |                   |                                                                 | 
+ 57242724 |       9500000 |  id           |      48.72 |           |          |                   |                                                                 | 
+ 57242722 |       9500000 |  quas         |      10.64 |           |          |                   |                                                                 | 
+(10 rows)
+
+Time: 45933.856 ms (00:45.934)
+
+postgres=# select * from dishes left join images on dishes.dish_id = images.dish_id WHERE dishes.restaurant_id = 9800999;
+ dish_id  | restaurant_id |  dish_name   | dish_price | image_id | dish_id  |    user_name    |                           image_url                            |                image_date                
+----------+---------------+--------------+------------+----------+----------+-----------------+----------------------------------------------------------------+------------------------------------------
+ 59056893 |       9800999 |  sint        |      43.96 | 59355976 | 59056893 |  Trey Collier   |   https://s3-us-west-1.amazonaws.com/pley-dish-images/0135.jpg |  Thu Apr 26 2018 05:46:04 GMT-0700 (PDT)
+ 59056894 |       9800999 |  numquam     |      17.31 | 59355977 | 59056894 |  Maxwell Abbott |   https://s3-us-west-1.amazonaws.com/pley-dish-images/0447.jpg |  Sat Oct 27 2018 07:33:07 GMT-0700 (PDT)
+ 59056890 |       9800999 |  asperiores  |      13.48 |          |          |                 |                                                                | 
+ 59056892 |       9800999 |  voluptatem  |      25.94 |          |          |                 |                                                                | 
+ 59056889 |       9800999 |  molestias   |      44.66 |          |          |                 |                                                                | 
+ 59056891 |       9800999 |  consectetur |      29.22 |          |          |                 |                                                                | 
+(6 rows)
+
+Time: 48268.871 ms (00:48.269)
+
+====>> WITH INDEX
+
+postgres=# select * from dishes left join reviews on dishes.dish_id = reviews.dish_id WHERE dishes.restaurant_id = 9800999;
+ dish_id  | restaurant_id |  dish_name   | dish_price | review_id | dish_id  |     user_name      |                  review_text                  |               review_date                
+----------+---------------+--------------+------------+-----------+----------+--------------------+-----------------------------------------------+------------------------------------------
+ 59056889 |       9800999 |  molestias   |      44.66 |  59319191 | 59056889 |  Waylon Stark      |  Voluptas at nihil.                           |  Mon May 14 2018 20:34:58 GMT-0700 (PDT)
+ 59056890 |       9800999 |  asperiores  |      13.48 |           |          |                    |                                               | 
+ 59056891 |       9800999 |  consectetur |      29.22 |  59319192 | 59056891 |  Miss Kobe King    |  Molestiae quod nulla.                        |  Thu Feb 22 2018 21:28:47 GMT-0800 (PST)
+ 59056891 |       9800999 |  consectetur |      29.22 |  59319193 | 59056891 |  Fredrick Schuster |  Ea laboriosam ex et ab iure ipsam assumenda. |  Fri Mar 02 2018 09:44:56 GMT-0800 (PST)
+ 59056892 |       9800999 |  voluptatem  |      25.94 |  59319194 | 59056892 |  Pearline Stehr    |  Eveniet et ipsum vel magnam aperiam.         |  Thu Dec 21 2017 18:30:30 GMT-0800 (PST)
+ 59056893 |       9800999 |  sint        |      43.96 |           |          |                    |                                               | 
+ 59056894 |       9800999 |  numquam     |      17.31 |           |          |                    |                                               | 
+(7 rows)
+
+Time: 2.468 ms
+
+postgres=# select * from dishes left join reviews on dishes.dish_id = reviews.dish_id WHERE dishes.restaurant_id = 9500020;                                                             
+ dish_id  | restaurant_id | dish_name | dish_price | review_id | dish_id  |      user_name      |                              review_text                              |               review_date                
+----------+---------------+-----------+------------+-----------+----------+---------------------+-----------------------------------------------------------------------+------------------------------------------
+ 57242860 |       9500020 |  et       |      42.64 |           |          |                     |                                                                       | 
+ 57242861 |       9500020 |  iure     |      25.38 |  57497488 | 57242861 |  Lavinia Altenwerth |  Exercitationem quod a ipsam odio veniam.                             |  Wed Sep 05 2018 05:50:34 GMT-0700 (PDT)
+ 57242862 |       9500020 |  veniam   |      49.99 |  57497489 | 57242862 |  Ernestina Dare     |  Qui dignissimos odio repellat tenetur voluptatibus quasi omnis sint. |  Tue Mar 06 2018 23:28:33 GMT-0800 (PST)
+ 57242863 |       9500020 |  nemo     |      41.44 |  57497490 | 57242863 |  Domenic Schultz    |  Dolorem saepe et iusto sed et beatae.                                |  Thu Sep 06 2018 16:50:54 GMT-0700 (PDT)
+ 57242863 |       9500020 |  nemo     |      41.44 |  57497491 | 57242863 |  Philip Bartell     |  Soluta ipsum soluta totam veritatis fuga ipsam quam vel.             |  Sun Apr 08 2018 03:58:06 GMT-0700 (PDT)
+ 57242864 |       9500020 |  tempora  |      15.71 |           |          |                     |                                                                       | 
+ 57242865 |       9500020 |  eum      |      37.93 |  57497493 | 57242865 |  Addison Rogahn     |  Sunt iste officiis dolorem.                                          |  Sat Jun 02 2018 11:15:11 GMT-0700 (PDT)
+ 57242865 |       9500020 |  eum      |      37.93 |  57497492 | 57242865 |  Oscar Pfannerstill |  Reiciendis dolorum eum itaque aliquid odit ut.                       |  Sun Jul 01 2018 21:12:23 GMT-0700 (PDT)
+(8 rows)
+
+Time: 15.863 ms
+
+postgres=# select * from dishes left join images on dishes.dish_id = images.dish_id WHERE dishes.restaurant_id = 9800999;
+ dish_id  | restaurant_id |  dish_name   | dish_price | image_id | dish_id  |    user_name    |                           image_url                            |                image_date                
+----------+---------------+--------------+------------+----------+----------+-----------------+----------------------------------------------------------------+------------------------------------------
+ 59056889 |       9800999 |  molestias   |      44.66 |          |          |                 |                                                                | 
+ 59056890 |       9800999 |  asperiores  |      13.48 |          |          |                 |                                                                | 
+ 59056891 |       9800999 |  consectetur |      29.22 |          |          |                 |                                                                | 
+ 59056892 |       9800999 |  voluptatem  |      25.94 |          |          |                 |                                                                | 
+ 59056893 |       9800999 |  sint        |      43.96 | 59355976 | 59056893 |  Trey Collier   |   https://s3-us-west-1.amazonaws.com/pley-dish-images/0135.jpg |  Thu Apr 26 2018 05:46:04 GMT-0700 (PDT)
+ 59056894 |       9800999 |  numquam     |      17.31 | 59355977 | 59056894 |  Maxwell Abbott |   https://s3-us-west-1.amazonaws.com/pley-dish-images/0447.jpg |  Sat Oct 27 2018 07:33:07 GMT-0700 (PDT)
+(6 rows)
+
+Time: 3.626 ms
+postgres=# select * from dishes left join images on dishes.dish_id = images.dish_id WHERE dishes.restaurant_id = 9819999;
+ dish_id  | restaurant_id | dish_name | dish_price | image_id | dish_id  |    user_name    |                           image_url                            |                image_date                
+----------+---------------+-----------+------------+----------+----------+-----------------+----------------------------------------------------------------+------------------------------------------
+ 59171091 |       9819999 |  aut      |      20.68 |          |          |                 |                                                                | 
+ 59171092 |       9819999 |  ut       |      48.86 | 59470549 | 59171092 |  Jarrell Hoeger |   https://s3-us-west-1.amazonaws.com/pley-dish-images/0423.jpg |  Sun Jun 24 2018 06:37:54 GMT-0700 (PDT)
+ 59171093 |       9819999 |  cum      |      17.09 | 59470550 | 59171093 |  Chaz Hoeger    |   https://s3-us-west-1.amazonaws.com/pley-dish-images/0023.jpg |  Sun May 06 2018 19:06:51 GMT-0700 (PDT)
+ 59171094 |       9819999 |  eos      |      10.12 | 59470551 | 59171094 |  Abel Yundt III |   https://s3-us-west-1.amazonaws.com/pley-dish-images/0089.jpg |  Fri Jun 29 2018 09:12:10 GMT-0700 (PDT)
+ 59171094 |       9819999 |  eos      |      10.12 | 59470552 | 59171094 |  Evans Wiegand  |   https://s3-us-west-1.amazonaws.com/pley-dish-images/0132.jpg |  Thu Aug 02 2018 19:31:59 GMT-0700 (PDT)
+ 59171095 |       9819999 |  aut      |      20.21 | 59470553 | 59171095 |  Jackeline Hahn |   https://s3-us-west-1.amazonaws.com/pley-dish-images/0251.jpg |  Sun Dec 17 2017 08:50:12 GMT-0800 (PST)
+ 59171095 |       9819999 |  aut      |      20.21 | 59470554 | 59171095 |  Zakary Goldner |   https://s3-us-west-1.amazonaws.com/pley-dish-images/0485.jpg |  Sun Jun 03 2018 00:49:16 GMT-0700 (PDT)
+(7 rows)
+
+Time: 2.545 ms
+
