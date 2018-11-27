@@ -1,9 +1,5 @@
-// this.props.dish is a dish object 
-
 import React from 'react';
-import $ from 'jquery';
 import styled from 'styled-components';
-import axios from 'axios';
 
 const MainDiv = styled.div`
 display: flex;
@@ -71,87 +67,37 @@ const DetailWrapper = styled.div`
 `;
 DetailWrapper.displayName = 'DetailWrapper';
 
-class PopularDish extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      numberOfPhotos: 0,
-      imgurl: '',
-    };
-    this.getPhotoData = this.getPhotoData.bind(this);
+const PopularDish = ({ dish }) => {
+  const {
+    dish_name,
+    dish_price,
+    dish_reviews,
+    dish_images,
+  } = dish;
+
+  let photoWord = 'photos';
+  if (dish_images.length === 1) {
+    photoWord = 'photo';
+  }
+  let reviewsWord = 'reviews';
+  if (dish_reviews.length === 1) {
+    reviewsWord = 'review';
   }
 
-  getPhotoData() {
-    axios.get(`http://localhost:2000/menus/${this.props.restaurantName}/dishes/${this.props.dish.id}/photos`)
-      .then(data => {
-        this.setState({ numberOfPhotos: data.data.length });
-        return axios.get(`http://localhost:2000/photos/${data.data[0].photos_id}`)
-          .then(photoData => {
-            this.setState({ imgurl: photoData.data[0].url });
-          });
-
-      });
-  }
-
-  // REFACTORED FROM USING AJAX..
-  // $.ajax(`/menus/${this.props.restaurantName}/dishes/${this.props.dish.id}/photos`, {
-  //   method: 'GET',
-  //   success: (data) => {
-  //     // console.log('data>>>>', data);
-  //     this.setState({ numberOfPhotos: data.length });
-  //     // console.log('photos_id from first record>>>,', data[0].photos_id);
-  //     $.ajax(`/photos/${data[0].photos_id}`, {
-  //       success: (photoData) => {
-  //         // console.log('photoData>>>', photoData);
-  //         this.setState({ imgurl: photoData[0].url, impgCaption: photoData[0].caption });
-  //       },
-  //       error: () => {
-  //         console.log('error from second ajax');
-  //       }
-  //     });
-  //   },
-  //   error: () => {
-  //     console.log('error from getPhotoData 1st ajax request');
-  //   }
-  // });
-
-  componentDidMount() {
-    this.getPhotoData();
-  }
-
-  render() {
-
-    const { restaurantName, dish } = this.props;
-
-    let photoWord = 'photos';
-    if (this.state.numberOfPhotos === 1) {
-      photoWord = 'photo';
-    }
-    let reviewsWord = 'reviews';
-    if (dish.reviews === 1) {
-      reviewsWord = 'review';
-    }
-
-    let priceWithZero = '' + dish.price;
-    if (dish.price.toString().length === 3) {
-      priceWithZero = '' + dish.price + '0';
-    }
-
-    return (
-      <MainDiv>
-        <ImageWrapper>
-          <Image src={this.state.imgurl} alt="picture of food"></Image>
-          <Price>{'$' + priceWithZero}</Price>
-        </ImageWrapper>
-        <DetailWrapper>
-          <b>{dish.name[0].toUpperCase() + dish.name.slice(1)}</b>
-          <div className='numPhotosReviews'>
-            {this.state.numberOfPhotos + " " + photoWord + " " + "\u00B7"} {dish.reviews + ' ' + reviewsWord}
-          </div>
-        </DetailWrapper>
-      </MainDiv>
-    );
-  }
-}
+  return (
+    <MainDiv>
+      <ImageWrapper>
+        <Image src={dish_images[0].url} alt="picture of food"></Image>
+        <Price>{`$${dish_price}`}</Price>
+      </ImageWrapper>
+      <DetailWrapper>
+        <b>{dish_name}</b>
+        <div className="numPhotosReviews">
+          {`${dish_images.length} ${photoWord} \u00B7`} {`${dish_reviews.length} ${reviewsWord}`}
+        </div>
+      </DetailWrapper>
+    </MainDiv>
+  );
+};
 
 export default PopularDish;

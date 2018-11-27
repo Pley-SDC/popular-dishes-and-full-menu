@@ -1,7 +1,7 @@
 const path = require('path');
 
 const sourceDirectory = path.join(__dirname, '/client/src/');
-const publicDirectory = path.join(__dirname, '/public/src/');
+const publicDirectory = path.join(__dirname, '/public/');
 
 /* eslint-disable */
 

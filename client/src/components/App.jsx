@@ -1,10 +1,11 @@
 import React from 'react';
-import PopularDish from './PopularDish.jsx';
-import Modal from './FullMenuModal.jsx';
-import initialDishData from '../initialData.js';
+import $ from 'jquery';
 import axios from 'axios';
 import styled from 'styled-components';
-import $ from 'jquery';
+import PopularDish from './PopularDish';
+import Modal from './FullMenuModal';
+// import initialDishData from '../initialData';
+
 
 const FullMenu = styled.div`
   font-family: arial;
@@ -104,12 +105,11 @@ class App extends React.Component {
     super(props);
 
     this.state = {
-      // if want to pass down restaurant name from Index.jsx, could do so here... but we are pulling from browswer url to integrate with team
-      // restaurantName: this.props.restaurantName,
-      restaurantName: 'est',
-      dishes: initialDishData,
-      top10: initialDishData,
-      show: false,
+      restaurant_name: '',
+      restaurantID: 10,
+      dishes: [],
+      // top10: initialDishData,
+      show: true,
       fullMenuHover: false,
     };
     this.getDishes = this.getDishes.bind(this);
@@ -120,43 +120,24 @@ class App extends React.Component {
     this.setFalseFullMenuHover = this.setFalseFullMenuHover.bind(this);
   }
 
-  getDishes() {
-    // first need to use the restaurantId in the url path, 
-    // then use it to get restaurantName, then get data based on restaurantName
-    const restaurantId = window.location.pathname.slice(1);
+  // getTop10(dishes) {
+  //   // returns an array of the top 10 dishesObjects ranked by # of reviews
 
-    axios.get(`http://localhost:2000/restaurants/${restaurantId}`)
-      .then(data => {
-        this.setState({ restaurantName: data.data[0].name });
-        return axios.get(`http://localhost:2000/menus/${this.state.restaurantName}`)
-          .then(data => {
-            this.setState({ dishes: data.data });
-            var top10 = this.getTop10(data.data);
-            // console.log('top10>>>', top10);
-            this.setState({ top10: top10 });
-          });
-      });
+  //   var compare = (a, b) => {
+  //     const reviewsA = a.reviews;
+  //     const reviewsB = b.reviews;
 
-  }
-
-  getTop10(dishes) {
-    // returns an array of the top 10 dishesObjects ranked by # of reviews
-
-    var compare = (a, b) => {
-      const reviewsA = a.reviews;
-      const reviewsB = b.reviews;
-
-      let comparison = 0;
-      if (reviewsA > reviewsB) {
-        comparison = 1;
-      } else if (reviewsA < reviewsB) {
-        comparison = -1;
-      }
-      return comparison;
-    };
-    var sortedDishes = dishes.sort(compare).reverse();
-    return sortedDishes.slice(0, 10);
-  }
+  //     let comparison = 0;
+  //     if (reviewsA > reviewsB) {
+  //       comparison = 1;
+  //     } else if (reviewsA < reviewsB) {
+  //       comparison = -1;
+  //     }
+  //     return comparison;
+  //   };
+  //   var sortedDishes = dishes.sort(compare).reverse();
+  //   return sortedDishes.slice(0, 10);
+  // }
 
   // * methods for styling ////////////////////////////////////
   scroll(direction) {
@@ -167,15 +148,16 @@ class App extends React.Component {
 
   showModal() {
     this.setState({ show: true });
-  };
+  }
 
   hideModal() {
     this.setState({ show: false, fullMenuHover: false });
-  };
+  }
 
   setTrueFullMenuHover() {
     this.setState({ fullMenuHover: true });
   }
+
   setFalseFullMenuHover() {
     this.setState({ fullMenuHover: false });
   }
@@ -186,29 +168,44 @@ class App extends React.Component {
     this.getDishes();
   }
 
-  render() {
+  getDishes() {
+    const { restaurantID } = this.state;
+    axios.get(`/restaurantName/${restaurantID}/menu`)
+      .then((response) => {
+        const { dishes, restaurant_name } = response.data;
+        this.setState({ dishes, restaurant_name });
+      });
+  }
 
-    if (this.state.show) {
+  render() {
+    const {
+      show,
+      fullMenuHover,
+      dishes,
+      restaurant_name,
+    } = this.state;
+    if (show) {
       return (
-        <MainContainer id='main'>
+        <MainContainer id="main">
           <TitleMenuContainer>
             <Title>Popular Dishes</Title>
-            <FullMenu onClick={this.showModal} className={this.state.fullMenuHover ? 'hoverOn' : 'hoverOff'}>Full Menu</FullMenu>
+            <FullMenu onClick={this.showModal} className={fullMenuHover ? 'hoverOn' : 'hoverOff'}>Full Menu</FullMenu>
             <RightArrow onClick={this.scroll.bind(null, -1)}><img src="https://s3.us-east-2.amazonaws.com/yelpsfphotos/scrollLeft.png" alt="scroll right icon" width="100%" height="100%"></img></RightArrow>
             <LeftArrow className="leftArrow" onClick={this.scroll.bind(null, 1)}><img src="https://s3.us-east-2.amazonaws.com/yelpsfphotos/scrollRight.png" alt="scroll left icon" width="100%" height="100%"></img></LeftArrow>
           </TitleMenuContainer>
-
-          <PopularDishesContainer className='popDishesContainer'>
-            {this.state.top10.map((dishObj) => (
-              <PopularDishSpanHolder key={dishObj.id} id={dishObj.id} className='popularDishSpan'>
-                <PopularDish restaurantName={this.state.restaurantName} dish={dishObj} />
-              </PopularDishSpanHolder>)
-            )}
+          <PopularDishesContainer className="popDishesContainer">
+            {dishes.map(dishObj => (
+              <PopularDishSpanHolder key={dishObj.dish_id} className="popularDishSpan">
+                <PopularDish restaurantName={restaurant_name} dish={dishObj} />
+              </PopularDishSpanHolder>))}
           </PopularDishesContainer>
-
-          <Modal show={this.state.show} handleClose={this.hideModal} restaurantName={this.state.restaurantName} fullMenu={this.state.dishes} />
-
-        </MainContainer >
+          <Modal
+            show={show}
+            handleClose={this.hideModal}
+            restaurantName={restaurant_name}
+            fullMenu={dishes}
+          />
+        </MainContainer>
       );
     }
     return (
@@ -218,24 +215,22 @@ class App extends React.Component {
           <FullMenuAndArrowsContainer>
             <FullMenu className="fullMenu" onClick={this.showModal} onMouseEnter={this.setTrueFullMenuHover} onMouseLeave={this.setFalseFullMenuHover} className={this.state.fullMenuHover ? 'hoverOn' : 'hoverOff'}>Full Menu</FullMenu>
             <ArrowsContainer>
-              <RightArrow onClick={this.scroll.bind(null, -1)}><img src="https://s3.us-east-2.amazonaws.com/yelpsfphotos/scrollLeft.png" alt="scroll right icon" width="100%" height="100%"></img></RightArrow>
-              <LeftArrow onClick={this.scroll.bind(null, 1)}><img src="https://s3.us-east-2.amazonaws.com/yelpsfphotos/scrollRight.png" alt="scroll left icon" width="100%" height="100%"></img></LeftArrow>
+              <RightArrow onClick={this.scroll.bind(null, -1)}><img src="https://s3.us-east-2.amazonaws.com/yelpsfphotos/scrollLeft.png" alt="scroll right icon" width="100%" height="100%" /></RightArrow>
+              <LeftArrow onClick={this.scroll.bind(null, 1)}><img src="https://s3.us-east-2.amazonaws.com/yelpsfphotos/scrollRight.png" alt="scroll left icon" width="100%" height="100%" /></LeftArrow>
             </ArrowsContainer>
           </FullMenuAndArrowsContainer>
 
         </TitleMenuContainer>
 
-        <PopularDishesContainer className='popDishesContainer'>
-          {this.state.top10.map((dishObj) => (
-            <PopularDishSpanHolder key={dishObj.id} id={dishObj.id} className='popularDishSpan'>
-              <PopularDish restaurantName={this.state.restaurantName} dish={dishObj} />
-            </PopularDishSpanHolder>)
-          )}
+        <PopularDishesContainer className="popDishesContainer">
+          {dishes.map(dishObj => (
+            <PopularDishSpanHolder key={dishObj.dish_id} className="popularDishSpan">
+              <PopularDish dish={dishObj} />
+            </PopularDishSpanHolder>
+          ))}
         </PopularDishesContainer>
-
       </MainContainer>
     );
-
   }
 }
 export default App;

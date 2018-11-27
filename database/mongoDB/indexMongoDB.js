@@ -11,6 +11,7 @@ const restaurantSchema = new Schema({
   dishes: [{
     dish_id: Number,
     dish_name: String,
+    dish_description: String,
     dish_price: Number,
     dish_reviews: [{
       review_id: Number,
