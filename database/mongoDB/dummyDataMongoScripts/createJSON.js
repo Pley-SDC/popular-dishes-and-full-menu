@@ -20,7 +20,7 @@ const fractionOfRestaurants = 10;
 const normalRestaurant = {
   minimumReviews: 0,
   maximumReviews: 5,
-  minimumImages: 0,
+  minimumImages: 1,
   maximumImages: 5,
 };
 
@@ -120,7 +120,8 @@ const createJSONData = () => {
   const createDish = () => {
     return {
       dish_id: dishIndex,
-      dish_name: faker.lorem.words(),
+      dish_name: faker.lorem.word(),
+      dish_description: faker.lorem.words(),
       dish_price: (Math.random() * (maximumDishPrice - minimumDishPrice) + minimumDishPrice)
         .toPrecision(4),
       dish_reviews: createDishReviewsArray(),

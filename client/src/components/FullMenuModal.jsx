@@ -77,9 +77,13 @@ const MainDiv = styled.div`
 `;
 MainDiv.displayName = 'MainDiv';
 
-const Modal = ({ handleClose, show, restaurantName, fullMenu }) => {
-  const showHideClassName = show ? "modal display-block" : "modal display-none";
-
+const Modal = ({
+  handleClose,
+  show,
+  restaurantName,
+  fullMenu,
+}) => {
+  const showHideClassName = show ? 'modal display-block' : 'modal display-none';
   return (
     <MainDiv className={showHideClassName}>
       <section className="modal-main">
@@ -87,11 +91,13 @@ const Modal = ({ handleClose, show, restaurantName, fullMenu }) => {
           <div className="closeButton" onClick={handleClose}>Close X</div>
         </div>
         <div className="modalContent">
-          <p className="menuTitle">Menu for {restaurantName[0].toUpperCase() + restaurantName.slice(1)}</p>
-          <div className='MenuItemsContainer'>
+          <p className="menuTitle">
+            Menu for
+            {` ${restaurantName}`}
+          </p>
+          <div className="MenuItemsContainer">
             {fullMenu.map(menuItem => (
-              <FullMenuItem menuItem={menuItem} key={menuItem.id} id={menuItem.id} className="fullMenucontainer" />)
-            )}
+              <FullMenuItem menuItem={menuItem} key={menuItem.dish_id} className="fullMenucontainer" />))}
           </div>
         </div>
       </section>

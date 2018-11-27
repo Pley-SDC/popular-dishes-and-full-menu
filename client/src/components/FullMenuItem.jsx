@@ -48,74 +48,35 @@ const CameraIcon = styled.img`
 CameraIcon.displayName = 'CameraIcon';
 
 
-class MenuItem extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      numberOfPhotos: 0,
-      imgurl: '',
-      imgCaption: ''
-    };
-    this.getPhotoData = this.getPhotoData.bind(this);
+const MenuItem = ({ menuItem }) => {
+  const { dish_price, dish_images, dish_reviews, dish_description } = menuItem;
+
+  let photoWord = 'photos';
+  if (dish_images === 1) {
+    photoWord = 'photo';
   }
-
-  getPhotoData() {
-    $.ajax(`http://localhost:2000/menus/${this.props.restaurantName}/dishes/${this.props.menuItem.id}/photos`, {
-      method: 'GET',
-      success: (data) => {
-        // console.log('data>>>>', data);
-        this.setState({ numberOfPhotos: data.length });
-        // console.log('photos_id from first record>>>,', data[0].photos_id);
-        $.ajax(`http://localhost:2000/photos/${data[0].photos_id}`, {
-          success: (photoData) => {
-            // console.log('photoData>>>', photoData);
-            this.setState({ imgurl: photoData[0].url, impgCaption: photoData[0].caption });
-          },
-          error: () => {
-            console.log('error from second ajax');
-          }
-        });
-      },
-      error: () => {
-        console.log('error from getPhotoData 1st ajax request');
-      }
-    });
+  let reviewsWord = 'reviews';
+  if (dish_reviews === 1) {
+    reviewsWord = 'review';
   }
-
-  componentDidMount() {
-    this.getPhotoData();
-  }
-
-  render() {
-    let priceWithZero = '' + this.props.menuItem.price;
-
-    if (this.props.menuItem.price.toString().length === 3) {
-      priceWithZero = '' + this.props.menuItem.price + '0';
-    }
-
-    let photoWord = 'photos';
-    if (this.state.numberOfPhotos === 1) {
-      photoWord = 'photo';
-    }
-    let reviewsWord = 'reviews';
-    if (this.props.menuItem.reviews === 1) {
-      reviewsWord = 'review';
-    }
-
-    return (
-      <MainDiv>
-        <div className="menuItemCol imgCol">
-          <img src={this.state.imgurl} alt='menuItem photo'></img>
+  return (
+    <MainDiv>
+      <div className="menuItemCol imgCol">
+        <img src={dish_images[0].url} alt="dish_image" />
+      </div>
+      <div className="menuItemCol">
+        <div><b>{menuItem.dish_name}</b></div>
+        <div>{menuItem.dish_description}</div>
+        <div className="reviewsAndPhotos">
+          <StarIcon src="https://s3.us-east-2.amazonaws.com/yumpsfphotos/small_0%403x.png" alt="reviews icon" />
+          {`${dish_reviews.length} ${reviewsWord}`}
+          <CameraIcon src="https://s3.us-east-2.amazonaws.com/yumpsfphotos/camericon2.png" alt="camera icon" />
+          {`${menuItem.dish_images.length} ${photoWord} `}
         </div>
-        <div className="menuItemCol">
-          <div><b>{this.props.menuItem.name[0].toUpperCase() + this.props.menuItem.name.slice(1)}</b></div>
-          <div>{this.props.menuItem.description[0].toUpperCase() + this.props.menuItem.description.slice(1) + '.'}</div>
-          <div className="reviewsAndPhotos"><StarIcon src="https://s3.us-east-2.amazonaws.com/yumpsfphotos/small_0%403x.png" alt="reviews icon"></StarIcon> {this.props.menuItem.reviews + ' ' + reviewsWord + ' '} <CameraIcon src="https://s3.us-east-2.amazonaws.com/yumpsfphotos/camericon2.png" alt="camera icon"></CameraIcon> {this.state.numberOfPhotos + ' ' + photoWord + ' '} </div>
-        </div>
-        <div className="menuItemCol priceCol"><b>{'$' + priceWithZero}</b></div>
-      </MainDiv>
-    );
-  }
-}
+      </div>
+      <div className="menuItemCol priceCol"><b>{`$${dish_price}`}</b></div>
+    </MainDiv>
+  );
+};
 
 export default MenuItem;
