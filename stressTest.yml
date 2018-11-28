@@ -1,11 +1,11 @@
 config:
   target: 'http://127.0.0.1:3004'
   phases:
-    - duration: 60
-      arrivalRate: 20
+    - duration: 1800
+      arrivalRate: 10
 scenarios:
   - flow:
     - loop:
       - get:
           url: "/restaurantName/{{ $randomNumber(9000000, 10000000) }}/menu"
-      count: 10
+      count: 15

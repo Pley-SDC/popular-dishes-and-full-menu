@@ -27,6 +27,7 @@ public/
 public/bundle.js 
 bundle.js 
 database/data
+database/mongoDB/data
 
 # testing practice
 spec/components/subtract.test.js

@@ -3,13 +3,13 @@ const faker = require('faker');
 const path = require('path');
 const { sprintf } = require('sprintf-js');
 
-const stream = fs.createWriteStream(path.join(__dirname, './data/nosqlRestaurants.json'));
+const stream = fs.createWriteStream(path.join(__dirname, '../data/nosqlRestaurants.json'));
 
 /* ==============================>>>>>>>>>> Constraints <<<<<<<<<<============================== */
 
 const numberOfRestaurants = 10000000;
-const maximumDishesPerRestaurant = 10;
-const minimumDishesPerRestaurant = 3;
+const maximumDishesPerRestaurant = 7;
+const minimumDishesPerRestaurant = 5;
 const availableImages = 499;
 const maximumDishPrice = 50;
 const minimumDishPrice = 10;
@@ -19,16 +19,16 @@ const minimumDishPrice = 10;
 const fractionOfRestaurants = 10;
 const normalRestaurant = {
   minimumReviews: 0,
-  maximumReviews: 5,
+  maximumReviews: 3,
   minimumImages: 1,
-  maximumImages: 5,
+  maximumImages: 3,
 };
 
 const popularRestaurant = {
-  minimumReviews: 5,
-  maximumReviews: 10,
-  minimumImages: 5,
-  maximumImages: 10,
+  minimumReviews: 4,
+  maximumReviews: 7,
+  minimumImages: 4,
+  maximumImages: 7,
 };
 
 
@@ -60,7 +60,6 @@ let restaurantIndex = 1;
 let dishIndex = 0;
 
 let reviewIndex = 0;
-let imageIndex = 0;
 let constraint;
 let imageNumber;
 let numberOfImages;
@@ -91,9 +90,7 @@ const createJSONData = () => {
     imagesArray = [];
     while (imagesArray.length < numberOfImages) {
       imagesArray.push(createDishImage());
-      imageIndex += 1;
     }
-    imageIndex = 0;
     return imagesArray;
   };
 
@@ -140,7 +137,7 @@ const createJSONData = () => {
     return dishesArray;
   };
 
-  while (restaurantIndex < numberOfRestaurants) {
+  while (restaurantIndex <= numberOfRestaurants) {
     if (checkIfPopularRestaurant(restaurantIndex)) {
       constraint = popularRestaurant;
     } else {

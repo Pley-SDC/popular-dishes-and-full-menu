@@ -1,1 +1,1 @@
-mongoimport --db sdc --collection restaurants --file data/nosqlRestaurants.json
+mongoimport --db sdc2 --collection restaurants --file ../data/nosqlRestaurants.json
