@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 require('mongoose-explain');
 
-mongoose.connect('mongodb://localhost:27017/sdc2', { useNewUrlParser: true });
+mongoose.connect('mongodb://ec2-52-14-212-172.us-east-2.compute.amazonaws.com:27017/sdc-EC2', { useNewUrlParser: true });
 
 const { Schema } = mongoose;
 
