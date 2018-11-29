@@ -106,10 +106,10 @@ class App extends React.Component {
 
     this.state = {
       restaurant_name: '',
-      restaurantID: 10,
+      restaurantID: 10000000,
       dishes: [],
       // top10: initialDishData,
-      show: true,
+      show: false,
       fullMenuHover: false,
     };
     this.getDishes = this.getDishes.bind(this);

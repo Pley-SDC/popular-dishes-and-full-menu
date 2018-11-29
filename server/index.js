@@ -7,7 +7,7 @@ const mongoController = require('../database/mongoDB/mongoController.js');
 
 const app = express();
 
-const PORT = 3004;
+const PORT = 8080;
 
 app.use(morgan('dev'));
 
@@ -15,6 +15,10 @@ app.use((req, res, next) => {
   res.header('Access-Control-Allow-Origin', '*');
   res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
   next();
+});
+
+app.get('/loaderio-b54af1113c80bf2f8b5440d57f6f0c6f/', (req, res) => {
+  res.sendfile(path.join(__dirname, '../public', 'loaderVerification.txt'));
 });
 
 app.use(bodyParser.json());
