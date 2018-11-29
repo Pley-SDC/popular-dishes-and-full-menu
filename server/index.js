@@ -1,4 +1,4 @@
-const newRelic = require('newrelic');
+// const newRelic = require('newrelic');
 const morgan = require('morgan');
 const express = require('express');
 const path = require('path');
@@ -17,7 +17,7 @@ app.use((req, res, next) => {
   next();
 });
 
-app.get('/loaderio-b54af1113c80bf2f8b5440d57f6f0c6f/', (req, res) => {
+app.get('/loaderio-225c4bc8e06e7988218f2e681e379f05/', (req, res) => {
   res.sendfile(path.join(__dirname, '../public', 'loaderVerification.txt'));
 });
 
