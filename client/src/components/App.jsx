@@ -170,7 +170,7 @@ class App extends React.Component {
 
   getDishes() {
     const { restaurantID } = this.state;
-    axios.get(`/restaurantName/${restaurantID}/menu`)
+    axios.get(`/api/${restaurantID}/menu`)
       .then((response) => {
         const { dishes, restaurant_name } = response.data;
         this.setState({ dishes, restaurant_name });
