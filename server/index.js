@@ -36,8 +36,8 @@ app.use(bodyParser.json());
 
 app.use(express.static(path.join(__dirname, '../public')));
 
-app.get('/:restaurantName/:restaurantID/menu', (req, res) => {
-  const { restaurantName, restaurantID } = req.params;
+app.get('/api/:restaurantID/menu', (req, res) => {
+  const { restaurantID } = req.params;
   redisClient.get(restaurantID, (redisError, redisResult) => {
     if (redisError || redisResult === null) {
       mongoController.findRestaurantById(restaurantID, (mongoError, mongoResult) => {
